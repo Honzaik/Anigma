@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Anigma</string>
+    <string name="btn_text_mode">Text mode</string>
+    <string name="btn_file_mode">File mode</string>
+    <string name="text_mode_input_text">Plaintext</string>
+    <string name="text_mode_input_key">Password (key)</string>
 </resources>
