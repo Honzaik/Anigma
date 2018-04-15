@@ -21,13 +21,14 @@
             android:orientation="vertical">
 
             <LinearLayout
+                style="?android:attr/buttonBarStyle"
                 android:id="@+id/LinearLayoutMenu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:orientation="horizontal">
 
                 <Button
+                    style="?android:attr/buttonBarButtonStyle"
                     android:id="@+id/btnTextMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,6 +36,7 @@
                     android:text="@string/btn_text_mode" />
 
                 <Button
+                    style="?android:attr/buttonBarButtonStyle"
                     android:id="@+id/btnFileMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -47,7 +49,6 @@
                 android:id="@+id/LinearLayoutTextMode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <EditText
@@ -56,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/text_mode_input_text"
-                    android:inputType="textPersonName" />
+                    android:inputType="text" />
 
                 <EditText
                     android:id="@+id/editTextPassword"
@@ -64,14 +65,19 @@
                     android:layout_height="wrap_content"
                     android:ems="10"
                     android:hint="@string/text_mode_input_key"
-                    android:inputType="textPersonName" />
+                    android:inputType="text" />
+
+                <Spinner
+                    android:id="@+id/spinnerTextAlgo"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:spinnerMode="dialog" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/LinearLayoutFileMode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:orientation="vertical"
                 android:visibility="invisible">
 

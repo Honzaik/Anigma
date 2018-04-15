@@ -6,18 +6,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TableLayout;
+import android.widget.Spinner;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "Ang";
 
+    private Encryptor enc;
+
+    private Spinner spinnerTextAlgo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        enc = new Encryptor();
 
         LinearLayout mainLinearLayout = (LinearLayout) findViewById(R.id.LinearLayoutMain);
 
@@ -49,5 +56,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        spinnerTextAlgo = (Spinner) findViewById(R.id.spinnerTextAlgo);
+        fillSpinners();
+
+    }
+
+    private void fillSpinners(){
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
+        adapter.addAll(enc.algorithmList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerTextAlgo.setAdapter(adapter);
     }
 }
