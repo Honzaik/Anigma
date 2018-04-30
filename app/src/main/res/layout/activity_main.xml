@@ -21,14 +21,12 @@
             android:orientation="vertical">
 
             <LinearLayout
-                style="?android:attr/buttonBarStyle"
                 android:id="@+id/LinearLayoutMenu"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
                 <Button
-                    style="?android:attr/buttonBarButtonStyle"
                     android:id="@+id/btnTextMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -36,7 +34,6 @@
                     android:text="@string/btn_text_mode" />
 
                 <Button
-                    style="?android:attr/buttonBarButtonStyle"
                     android:id="@+id/btnFileMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -50,6 +47,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
+
+                <Spinner
+                    android:id="@+id/spinnerTextAlgo"
+                    android:layout_width="395dp"
+                    android:layout_height="50dp"
+                    android:spinnerMode="dialog"
+                    tools:layout_editor_absoluteX="8dp"
+                    tools:layout_editor_absoluteY="222dp" />
 
                 <EditText
                     android:id="@+id/editTextPlainText"
@@ -67,11 +72,31 @@
                     android:hint="@string/text_mode_input_key"
                     android:inputType="text" />
 
-                <Spinner
-                    android:id="@+id/spinnerTextAlgo"
+                <LinearLayout
+                    android:id="@+id/LinearLayoutIV"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:spinnerMode="dialog" />
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+                    <EditText
+                        android:id="@+id/editTextIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:ems="10"
+                        android:hint="@string/text_mode_input_iv"
+                        android:inputType="text"
+                        android:visibility="visible" />
+
+                    <Button
+                        android:id="@+id/btnRndIV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/text_mode_input_random_iv" />
+                </LinearLayout>
+
             </LinearLayout>
 
             <LinearLayout

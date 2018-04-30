@@ -4,4 +4,6 @@
     <string name="btn_file_mode">File mode</string>
     <string name="text_mode_input_text">Plaintext</string>
     <string name="text_mode_input_key">Password (key)</string>
+    <string name="text_mode_input_iv">Initialization vector (IV)</string>
+    <string name="text_mode_input_random_iv">Generate random</string>
 </resources>
