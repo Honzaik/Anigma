@@ -6,4 +6,8 @@
     <string name="text_mode_input_key">Password (key)</string>
     <string name="text_mode_input_iv">Initialization vector (IV)</string>
     <string name="text_mode_input_random_iv">Generate random</string>
+    <string name="text_mode_encrypt_button">Encrypt string</string>
+    <string name="text_mode_copy_iv">Copy IV to clipboard</string>
+    <string name="text_mode_copy_result">Copy result to clipboard</string>
+    <string name="text_mode_encrypted_text">Encrypted string</string>
 </resources>

@@ -50,25 +50,25 @@
 
                 <Spinner
                     android:id="@+id/spinnerTextAlgo"
-                    android:layout_width="395dp"
+                    android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:spinnerMode="dialog"
-                    tools:layout_editor_absoluteX="8dp"
-                    tools:layout_editor_absoluteY="222dp" />
+                    android:spinnerMode="dialog" />
 
                 <EditText
                     android:id="@+id/editTextPlainText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:fontFamily="monospace"
                     android:hint="@string/text_mode_input_text"
-                    android:inputType="text" />
+                    android:inputType="textMultiLine" />
 
                 <EditText
                     android:id="@+id/editTextPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
+                    android:fontFamily="monospace"
                     android:hint="@string/text_mode_input_key"
                     android:inputType="text" />
 
@@ -85,6 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="2"
                         android:ems="10"
+                        android:fontFamily="monospace"
                         android:hint="@string/text_mode_input_iv"
                         android:inputType="text"
                         android:visibility="visible" />
@@ -95,7 +96,47 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/text_mode_input_random_iv" />
+
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/btnCopyResult"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="@string/text_mode_copy_result" />
+
+                    <Button
+                        android:id="@+id/btnCopyIV"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="@string/text_mode_copy_iv" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnTextModeEncrypt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_mode_encrypt_button" />
+
+                <TextView
+                    android:id="@+id/textViewTextModeResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:fontFamily="monospace"
+                    android:text="@string/text_mode_encrypted_text"
+                    android:textIsSelectable="true"
+                    android:textSize="18sp" />
 
             </LinearLayout>
 

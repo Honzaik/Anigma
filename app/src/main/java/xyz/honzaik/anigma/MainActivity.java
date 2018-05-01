@@ -1,6 +1,9 @@
 package xyz.honzaik.anigma;
 
 import android.animation.LayoutTransition;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +15,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +28,9 @@ public class MainActivity extends AppCompatActivity {
     private Button btnTextMode;
     private Button btnFileMode;
     private Button btnRndIV;
+    private Button btnCopyResult;
+    private Button btnCopyIV;
+    private Button btnTextModeEncrypt;
     private LinearLayout mainLinearLayout;
     private LinearLayout textModeLayout;
     private LinearLayout textModeIVLayout;
@@ -30,6 +39,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextPlaintext;
     private EditText editTextPassword;
     private EditText editTextIV;
+    private TextView textViewResult;
+
+    private ClipboardManager clipboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
 
         btnTextMode = (Button) findViewById(R.id.btnTextMode);
         btnFileMode = (Button) findViewById(R.id.btnFileMode);
+
+
+        editTextPlaintext = (EditText) findViewById(R.id.editTextPlainText);
+        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
+        editTextIV = (EditText) findViewById(R.id.editTextIV);
 
         textModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextMode);
         fileModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileMode);
@@ -85,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
         enc.printAvailableAlgos();
 
         textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutIV);
-        editTextIV = (EditText) findViewById(R.id.editTextIV);
 
 
         btnRndIV = (Button) findViewById(R.id.btnRndIV);
@@ -93,6 +109,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 editTextIV.setText(enc.getRandomIV());
+            }
+        });
+
+        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+        textViewResult = (TextView) findViewById(R.id.textViewTextModeResult);
+
+        btnCopyResult = (Button) findViewById(R.id.btnCopyResult);
+        btnCopyResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("encryptedString", textViewResult.getText()));
+            }
+        });
+
+        btnCopyIV = (Button) findViewById(R.id.btnCopyIV);
+        btnCopyIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("IV", editTextIV.getText()));
+            }
+        });
+
+        btnTextModeEncrypt = (Button) findViewById(R.id.btnTextModeEncrypt);
+        btnTextModeEncrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startStringEncryption();
             }
         });
     }
@@ -112,5 +156,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             textModeIVLayout.setVisibility(View.GONE);
         }
+    }
+
+    private void startStringEncryption(){
+        String result = enc.encryptString(editTextPlaintext.getText().toString(), editTextPassword.getText().toString(), editTextIV.getText().toString());
+        textViewResult.setText(result);
     }
 }
