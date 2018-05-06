@@ -48,6 +48,7 @@ public class Encryptor {
                 algorithmList.put(s, new Algorithm(s));
             }
         }
+
     }
 
     public void printAvailableAlgos(){
