@@ -1,7 +1,7 @@
 package xyz.honzaik.anigma;
 
 public enum Algorithms {
-    AES("AES-128", true), RSA("RSA", false), TRIPLEDES("3-DES", true);
+    AES("AES-128", true), TRIPLEDES("3-DES", true);
 
     private final String name;
     private final boolean hasIV;

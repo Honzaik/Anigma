@@ -11,7 +11,6 @@ import java.util.TreeMap;
 
 import xyz.honzaik.anigma.Ciphers.Algo3DES;
 import xyz.honzaik.anigma.Ciphers.AlgoAES;
-import xyz.honzaik.anigma.Ciphers.AlgoRSA;
 import xyz.honzaik.anigma.Tasks.StringTask;
 
 
@@ -31,8 +30,6 @@ public class Encryptor {
         for(Algorithms algo : Algorithms.values()){
             switch (algo){
                 case AES: algorithmList.put(algo.getName(), new AlgoAES(algo, random));
-                break;
-                case RSA: algorithmList.put(algo.getName(), new AlgoRSA(algo, random));
                 break;
                 case TRIPLEDES: algorithmList.put(algo.getName(), new Algo3DES(algo, random));
                 break;
