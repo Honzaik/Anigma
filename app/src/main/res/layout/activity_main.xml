@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/mainBackground"
     tools:context=".MainActivity">
 
     <ScrollView
@@ -27,6 +28,8 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:backgroundTint="@color/btnColor1"
+                    android:textColor="@color/btnTextColor"
                     android:id="@+id/btnTextMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -34,6 +37,8 @@
                     android:text="@string/btn_text_mode" />
 
                 <Button
+                    android:backgroundTint="@color/btnColor1"
+                    android:textColor="@color/btnTextColor"
                     android:id="@+id/btnFileMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,6 +67,8 @@
                     android:orientation="horizontal">
 
                     <Button
+                        android:backgroundTint="@color/btnColor2"
+                        android:textColor="@color/btnTextColor"
                         android:id="@+id/btnTextModeEncryptionMode"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
@@ -70,6 +77,8 @@
                         android:text="@string/mode_encryption_button" />
 
                     <Button
+                        android:backgroundTint="@color/btnColor2"
+                        android:textColor="@color/btnTextColor"
                         android:id="@+id/btnTextModeDecryptionMode"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
@@ -122,6 +131,8 @@
                             android:visibility="visible" />
 
                         <Button
+                            android:backgroundTint="@color/btnColor1"
+                            android:textColor="@color/btnTextColor"
                             android:id="@+id/btnRndIV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -131,6 +142,8 @@
                     </LinearLayout>
 
                     <Button
+                        android:backgroundTint="@color/btnColor2"
+                        android:textColor="@color/btnTextColor"
                         android:id="@+id/btnCopyIV"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
@@ -139,11 +152,20 @@
                         android:text="@string/text_mode_copy_iv" />
 
                     <Button
+                        android:backgroundTint="@color/btnColor1"
+                        android:textColor="@color/btnTextColor"
                         android:id="@+id/btnTextModeEncrypt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/text_mode_encrypt_button" />
+
+                    <ProgressBar
+                        android:id="@+id/textModeProgressEnc"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
 
                 </LinearLayout>
 
@@ -173,15 +195,26 @@
                         android:inputType="text" />
 
                     <Button
+                        android:backgroundTint="@color/btnColor1"
+                        android:textColor="@color/btnTextColor"
                         android:id="@+id/btnTextModeDecrypt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/text_mode_decrypt_button" />
 
+                    <ProgressBar
+                        android:id="@+id/textModeProgressDec"
+                        style="?android:attr/progressBarStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
                 <Button
+                    android:backgroundTint="@color/btnColor2"
+                    android:textColor="@color/btnTextColor"
                     android:id="@+id/btnCopyResult"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"

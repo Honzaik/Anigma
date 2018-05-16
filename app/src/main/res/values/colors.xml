@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="primary">#808F85</color>
+    <color name="primaryDark">#595959</color>
+    <color name="accent">#CFD11A</color>
+    <color name="blackOlive">#3F3F37</color>
+    <color name="pastelGrey">#D6D6B1</color>
+    <color name="bone">#E4E4CD</color>
+    <color name="taupe">#494331</color>
+    <color name="oliveDrab">#363124</color>
+    <color name="oldSilver">#878472</color>
+    <color name="blackShadows">#BDBBB2</color>
+    <color name="flame">#DE541E</color>
+    <color name="davysGrey">#595959</color>
+    <color name="mummyTomb">#808F85</color>
+    <color name="nickel">#69766D</color>
+    <color name="etonBlue">#91C499</color>
+    <color name="russianGreen">#6A8F70</color>
+    <color name="eggshell">#F2E9DC</color>
+    <color name="bitterLemon">#CFD11A</color>
+    <color name="isabelline">#EBF4EC</color>
+    <color name="blond">#F1F2C0</color>
+    <color name="lightGray">#CDE4D0</color>
+    <color name="btnColor1">@color/mummyTomb</color>
+    <color name="btnColor1Pressed">@color/nickel</color>
+    <color name="btnColor2">@color/etonBlue</color>
+    <color name="btnColor2Pressed">@color/russianGreen</color>
+    <color name="btnTextColor">@color/eggshell</color>
+    <color name="mainBackground">@color/isabelline</color>
 </resources>

@@ -14,4 +14,8 @@
     <string name="text_mode_encrypted_text">Result</string>
     <string name="mode_encryption_button">Encryption</string>
     <string name="mode_decryption_button">Decryption</string>
+    <string name="text_mode_error_encryption">There has been an error during encryption. Try again.</string>
+    <string name="text_mode_error_decryption">There has been an error during decryption. Maybe the password is incorrect. Try again.</string>
+    <string name="text_mode_error_decoding">There has been an error while decoding plaintext/ciphertext. Maybe the IV is incorrect. Try again.</string>
+    <string name="text_mode_error_nothing">Nothing happened. Try again.</string>
 </resources>

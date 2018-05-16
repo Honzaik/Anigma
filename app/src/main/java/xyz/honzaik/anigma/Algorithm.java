@@ -1,5 +1,8 @@
 package xyz.honzaik.anigma;
 
+import org.spongycastle.crypto.InvalidCipherTextException;
+import java.io.UnsupportedEncodingException;
+import java.lang.IllegalArgumentException;
 import java.security.SecureRandom;
 
 public abstract class Algorithm {
@@ -16,8 +19,8 @@ public abstract class Algorithm {
     }
 
     public abstract int getBlockSize();
-    public abstract String encryptString(String plaintext, String password, String IV);
-    public abstract String encryptString(String plaintext, String password);
-    public abstract String decryptString(String ciphertext, String password);
+    public abstract String encryptString(String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
+    public abstract String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
+    public abstract String decryptString(String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
 
 }

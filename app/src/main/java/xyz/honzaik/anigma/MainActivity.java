@@ -3,6 +3,9 @@ package xyz.honzaik.anigma;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBar;
@@ -14,9 +17,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Message;
+
+import xyz.honzaik.anigma.Tasks.StringTask;
+import xyz.honzaik.anigma.Tasks.StringTaskState;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextTextModeDecryptionPassword;
     private EditText editTextTextModeIV;
     private TextView textViewResult;
+    private ProgressBar progressBarEnc;
+    private ProgressBar progressBarDec;
+
     private Handler mainHandler;
 
     private ClipboardManager clipboard;
@@ -63,6 +73,9 @@ public class MainActivity extends AppCompatActivity {
         mainLinearLayout = (LinearLayout) findViewById(R.id.LinearLayoutMain);
 
         btnTextMode = (Button) findViewById(R.id.btnTextMode);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnTextMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1Pressed)));
+        }
         btnFileMode = (Button) findViewById(R.id.btnFileMode);
 
 
@@ -86,6 +99,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textModeLayout.setVisibility(View.VISIBLE);
                 fileModeLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnTextMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1Pressed)));
+                    btnFileMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1)));
+                }
             }
         });
 
@@ -94,10 +111,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textModeLayout.setVisibility(View.GONE);
                 fileModeLayout.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnTextMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1)));
+                    btnFileMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1Pressed)));
+                }
             }
         });
 
         btnTextModeEncryption = (Button) findViewById(R.id.btnTextModeEncryptionMode);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnTextModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+        }
         btnTextModeDecryption = (Button) findViewById(R.id.btnTextModeDecryptionMode);
 
         btnTextModeEncryption.setOnClickListener(new View.OnClickListener() {
@@ -105,14 +129,22 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textModeEncryptionLayout.setVisibility(View.VISIBLE);
                 textModeDecryptionLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnTextModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+                    btnTextModeDecryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2)));
+                }
             }
         });
 
         btnTextModeDecryption.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                textModeDecryptionLayout.setVisibility(View.VISIBLE);
                 textModeEncryptionLayout.setVisibility(View.GONE);
+                textModeDecryptionLayout.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnTextModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2)));
+                    btnTextModeDecryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+                }
 
             }
         });
@@ -168,31 +200,62 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        progressBarEnc = (ProgressBar) findViewById(R.id.textModeProgressEnc);
+        progressBarDec = (ProgressBar) findViewById(R.id.textModeProgressDec);
+
         btnTextModeEncrypt = (Button) findViewById(R.id.btnTextModeEncrypt);
         btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
 
         btnTextModeEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBarEnc.setVisibility(View.VISIBLE);
                 startStringEncryption();
             }
         });
         btnTextModeDecrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressBarDec.setVisibility(View.VISIBLE);
                 startStringDecryption();
             }
         });
     }
 
-    private void initHandler(){
-        mainHandler = new Handler(Looper.getMainLooper()){
+    private void initHandler() {
+        mainHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message inputMessage) {
                 StringTask task = (StringTask) inputMessage.obj;
-
-                switch (inputMessage.what) {
-                    default: textViewResult.setText(task.result);
+                String resultString = null;
+                switch (task.getState()) {
+                    case SUCCESS:
+                        resultString = task.result;
+                        break;
+                    case ERROR_ENCRYPTION:
+                        resultString = getResources().getString(R.string.text_mode_error_encryption);
+                        break;
+                    case ERROR_DECRYPTION:
+                        resultString = getResources().getString(R.string.text_mode_error_decryption);
+                        break;
+                    case ERROR_DECODING:
+                        resultString = getResources().getString(R.string.text_mode_error_decoding);
+                        break;
+                    case START:
+                        resultString = getResources().getString(R.string.text_mode_error_nothing);
+                        break;
+                    default:
+                }
+                if (task.getState() != StringTaskState.SUCCESS) {
+                    textViewResult.setTextColor(Color.RED);
+                } else {
+                    textViewResult.setTextColor(Color.BLACK);
+                }
+                textViewResult.setText(resultString);
+                if(task.isEncrypting()){
+                    progressBarEnc.setVisibility(View.GONE);
+                }else{
+                    progressBarDec.setVisibility(View.GONE);
                 }
             }
 
