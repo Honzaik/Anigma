@@ -54,65 +54,81 @@
                     android:layout_height="50dp"
                     android:spinnerMode="dialog" />
 
-                <EditText
-                    android:id="@+id/editTextPlainText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:fontFamily="monospace"
-                    android:hint="@string/text_mode_input_text"
-                    android:inputType="textMultiLine" />
-
-                <EditText
-                    android:id="@+id/editTextPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:fontFamily="monospace"
-                    android:hint="@string/text_mode_input_key"
-                    android:inputType="text" />
-
-                <LinearLayout
-                    android:id="@+id/LinearLayoutIV"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
-
-                    <EditText
-                        android:id="@+id/editTextIV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:ems="10"
-                        android:fontFamily="monospace"
-                        android:hint="@string/text_mode_input_iv"
-                        android:inputType="text"
-                        android:textSize="12sp"
-                        android:visibility="visible" />
-
-                    <Button
-                        android:id="@+id/btnRndIV"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/text_mode_input_random_iv" />
-
-                </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:animateLayoutChanges="true"
                     android:layout_weight="2"
                     android:orientation="horizontal">
 
                     <Button
-                        android:id="@+id/btnCopyResult"
+                        android:id="@+id/btnTextModeEncryptionMode"
                         android:layout_width="match_parent"
                         android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:text="@string/text_mode_copy_result" />
+                        android:text="@string/mode_encryption_button" />
+
+                    <Button
+                        android:id="@+id/btnTextModeDecryptionMode"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:text="@string/mode_decryption_button" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/LinearLayoutTextModeEncryption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/editTextPlainText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:fontFamily="monospace"
+                        android:hint="@string/text_mode_input_plaintext"
+                        android:inputType="textMultiLine" />
+
+                    <EditText
+                        android:id="@+id/editTextTextModeEncryptionPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:fontFamily="monospace"
+                        android:hint="@string/text_mode_input_key"
+                        android:inputType="text" />
+
+                    <LinearLayout
+                        android:id="@+id/LinearLayoutIV"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:weightSum="3">
+
+                        <EditText
+                            android:id="@+id/editTextTextModeIV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:ems="10"
+                            android:fontFamily="monospace"
+                            android:hint="@string/text_mode_input_iv"
+                            android:inputType="text"
+                            android:textSize="12sp"
+                            android:visibility="visible" />
+
+                        <Button
+                            android:id="@+id/btnRndIV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/text_mode_input_random_iv" />
+
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/btnCopyIV"
@@ -121,13 +137,6 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="@string/text_mode_copy_iv" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="2"
-                    android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/btnTextModeEncrypt"
@@ -136,16 +145,52 @@
                         android:layout_weight="1"
                         android:text="@string/text_mode_encrypt_button" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/LinearLayoutTextModeDecryption"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/editTextCiphertext"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:fontFamily="monospace"
+                        android:hint="@string/text_mode_input_ciphertext"
+                        android:inputType="textMultiLine" />
+
+                    <EditText
+                        android:id="@+id/editTextTextModeDecryptionPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:fontFamily="monospace"
+                        android:hint="@string/text_mode_input_key"
+                        android:inputType="text" />
+
                     <Button
                         android:id="@+id/btnTextModeDecrypt"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/text_mode_decrypt_button" />
+
                 </LinearLayout>
 
+                <Button
+                    android:id="@+id/btnCopyResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:text="@string/text_mode_copy_result" />
+
                 <TextView
-                    android:id="@+id/textViewTextModeResult"
+                    android:id="@+id/textModeResult"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"

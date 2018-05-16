@@ -18,7 +18,6 @@ public abstract class Algorithm {
     public abstract int getBlockSize();
     public abstract String encryptString(String plaintext, String password, String IV);
     public abstract String encryptString(String plaintext, String password);
-    public abstract String decryptString(String plaintext, String password, String IV);
-    public abstract String decryptString(String plaintext, String password);
+    public abstract String decryptString(String ciphertext, String password);
 
 }

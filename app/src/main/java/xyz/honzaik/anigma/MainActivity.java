@@ -1,9 +1,10 @@
 package xyz.honzaik.anigma;
 
-import android.animation.LayoutTransition;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.os.Message;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,40 +31,52 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCopyIV;
     private Button btnTextModeEncrypt;
     private Button btnTextModeDecrypt;
+    private Button btnTextModeEncryption;
+    private Button btnTextModeDecryption;
     private LinearLayout mainLinearLayout;
     private LinearLayout textModeLayout;
+    private LinearLayout textModeEncryptionLayout;
+    private LinearLayout textModeDecryptionLayout;
     private LinearLayout textModeIVLayout;
     private LinearLayout fileModeLayout;
     private Spinner spinnerTextAlgo;
     private EditText editTextPlaintext;
-    private EditText editTextPassword;
-    private EditText editTextIV;
+    private EditText editTextCiphertext;
+    private EditText editTextTextModeEncryptionPassword;
+    private EditText editTextTextModeDecryptionPassword;
+    private EditText editTextTextModeIV;
     private TextView textViewResult;
+    private Handler mainHandler;
 
     private ClipboardManager clipboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        initHandler();
+
         setContentView(R.layout.activity_main);
 
-        enc = new Encryptor();
+        enc = new Encryptor(this);
 
         mainLinearLayout = (LinearLayout) findViewById(R.id.LinearLayoutMain);
-
-        LayoutTransition lt = new LayoutTransition();
-
 
         btnTextMode = (Button) findViewById(R.id.btnTextMode);
         btnFileMode = (Button) findViewById(R.id.btnFileMode);
 
 
         editTextPlaintext = (EditText) findViewById(R.id.editTextPlainText);
-        editTextPassword = (EditText) findViewById(R.id.editTextPassword);
-        editTextIV = (EditText) findViewById(R.id.editTextIV);
+        editTextCiphertext = (EditText) findViewById(R.id.editTextCiphertext);
+        editTextTextModeEncryptionPassword = (EditText) findViewById(R.id.editTextTextModeEncryptionPassword);
+        editTextTextModeDecryptionPassword = (EditText) findViewById(R.id.editTextTextModeDecryptionPassword);
+        editTextTextModeIV = (EditText) findViewById(R.id.editTextTextModeIV);
 
         textModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextMode);
         fileModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileMode);
+
+        textModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeEncryption);
+        textModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeDecryption);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
@@ -80,6 +94,26 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 textModeLayout.setVisibility(View.GONE);
                 fileModeLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        btnTextModeEncryption = (Button) findViewById(R.id.btnTextModeEncryptionMode);
+        btnTextModeDecryption = (Button) findViewById(R.id.btnTextModeDecryptionMode);
+
+        btnTextModeEncryption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textModeEncryptionLayout.setVisibility(View.VISIBLE);
+                textModeDecryptionLayout.setVisibility(View.GONE);
+            }
+        });
+
+        btnTextModeDecryption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textModeDecryptionLayout.setVisibility(View.VISIBLE);
+                textModeEncryptionLayout.setVisibility(View.GONE);
+
             }
         });
 
@@ -107,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    editTextIV.setText(enc.getRandomIV());
+                    editTextTextModeIV.setText(enc.getRandomIV());
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -116,13 +150,13 @@ public class MainActivity extends AppCompatActivity {
 
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        textViewResult = (TextView) findViewById(R.id.textViewTextModeResult);
+        textViewResult = (TextView) findViewById(R.id.textModeResult);
 
         btnCopyResult = (Button) findViewById(R.id.btnCopyResult);
         btnCopyResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clipboard.setPrimaryClip(ClipData.newPlainText("encryptedString", textViewResult.getText()));
+                clipboard.setPrimaryClip(ClipData.newPlainText("resultString", textViewResult.getText().toString().trim()));
             }
         });
 
@@ -130,25 +164,43 @@ public class MainActivity extends AppCompatActivity {
         btnCopyIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clipboard.setPrimaryClip(ClipData.newPlainText("IV", editTextIV.getText()));
+                clipboard.setPrimaryClip(ClipData.newPlainText("IV", editTextTextModeIV.getText().toString().trim()));
             }
         });
 
         btnTextModeEncrypt = (Button) findViewById(R.id.btnTextModeEncrypt);
+        btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
+
         btnTextModeEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startStringEncryption();
             }
         });
-
-        btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
         btnTextModeDecrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startStringDecryption();
             }
         });
+    }
+
+    private void initHandler(){
+        mainHandler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(Message inputMessage) {
+                StringTask task = (StringTask) inputMessage.obj;
+
+                switch (inputMessage.what) {
+                    default: textViewResult.setText(task.result);
+                }
+            }
+
+        };
+    }
+
+    public Handler getHandler(){
+        return mainHandler;
     }
 
     private void fillSpinners(){
@@ -168,12 +220,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startStringEncryption(){
-        String result = enc.encryptString(editTextPlaintext.getText().toString(), editTextPassword.getText().toString(), editTextIV.getText().toString());
-        textViewResult.setText(result);
+        enc.getStringTask().encryptString(editTextPlaintext.getText().toString(), editTextTextModeEncryptionPassword.getText().toString(), editTextTextModeIV.getText().toString());
     }
 
     private void startStringDecryption(){
-        String result = enc.decryptString(editTextPlaintext.getText().toString(), editTextPassword.getText().toString(), editTextIV.getText().toString());
-        textViewResult.setText(result);
+        enc.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
     }
+
 }

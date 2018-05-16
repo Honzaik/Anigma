@@ -31,11 +31,6 @@ public class AlgoRSA extends Algorithm{
     }
 
     @Override
-    public String decryptString(String plaintext, String password, String IV) {
-        return null;
-    }
-
-    @Override
     public String decryptString(String plaintext, String password) {
         return null;
     }

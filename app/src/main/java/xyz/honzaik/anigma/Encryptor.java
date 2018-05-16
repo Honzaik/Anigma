@@ -3,7 +3,6 @@ package xyz.honzaik.anigma;
 import android.util.Base64;
 import android.util.Log;
 
-import org.spongycastle.crypto.BlockCipher;
 import org.spongycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.SecureRandom;
@@ -20,9 +19,13 @@ public class Encryptor {
     public TreeMap<String, Algorithm> algorithmList;
     private Algorithm currentAlgorithm;
     private SecureRandom random;
+    private StringTask stringTask;
+    private MainActivity mainActivity;
 
-    public Encryptor(){
+    public Encryptor(MainActivity mainActivity){
+        this.mainActivity = mainActivity;
         random = new SecureRandom();
+        stringTask = new StringTask(mainActivity.getHandler());
         algorithmList = new TreeMap<String, Algorithm>();
         for(Algorithms algo : Algorithms.values()){
             switch (algo){
@@ -57,6 +60,7 @@ public class Encryptor {
 
     public void setCurrentAlgoritm(String name){
         currentAlgorithm = algorithmList.get(name);
+        stringTask.setAlgo(currentAlgorithm);
     }
 
     public Algorithm getCurrentAlgorithm(){
@@ -74,19 +78,7 @@ public class Encryptor {
         return Base64.encodeToString(newIV, Base64.DEFAULT);
     }
 
-    public String encryptString(String plaintext, String password, String IV){
-        if(currentAlgorithm.hasIV){
-            return currentAlgorithm.encryptString(plaintext, password, IV);
-        }else{
-            return currentAlgorithm.encryptString(plaintext, password);
-        }
-    }
-
-    public String decryptString(String ciphertext, String password, String IV){
-        if(currentAlgorithm.hasIV){
-            return currentAlgorithm.decryptString(ciphertext, password, IV);
-        }else{
-            return currentAlgorithm.decryptString(ciphertext, password);
-        }
+    public StringTask getStringTask() {
+        return stringTask;
     }
 }
