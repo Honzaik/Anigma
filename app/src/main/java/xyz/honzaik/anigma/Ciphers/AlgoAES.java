@@ -24,8 +24,6 @@ import xyz.honzaik.anigma.MainActivity;
 public class AlgoAES extends Algorithm{
 
     private BlockCipher cipher;
-    private static final int BCRYPT_COST = 10;
-    private static final int BCRYPT_SALT_LENGTH = 16;
 
     public AlgoAES(Algorithms algo, SecureRandom random) {
         super(algo, random);

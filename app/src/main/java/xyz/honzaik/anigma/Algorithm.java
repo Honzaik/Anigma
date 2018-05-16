@@ -7,6 +7,8 @@ import java.security.SecureRandom;
 
 public abstract class Algorithm {
 
+    protected static final int BCRYPT_COST = 10;
+    protected static final int BCRYPT_SALT_LENGTH = 16;
     public String name;
     public boolean hasIV;
     protected SecureRandom random;
