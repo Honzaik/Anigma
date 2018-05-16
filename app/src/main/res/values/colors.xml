@@ -27,4 +27,5 @@
     <color name="btnColor2Pressed">@color/russianGreen</color>
     <color name="btnTextColor">@color/eggshell</color>
     <color name="mainBackground">@color/isabelline</color>
+    <color name="mainTextColor">@color/davysGrey</color>
 </resources>

@@ -267,9 +267,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fillSpinners(){
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item);
         adapter.addAll(enc.algorithmList.keySet());
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(R.layout.spinner_item);
         spinnerTextAlgo.setAdapter(adapter);
     }
 
