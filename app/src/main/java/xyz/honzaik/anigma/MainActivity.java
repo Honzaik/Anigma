@@ -7,7 +7,6 @@ import android.content.Context;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -16,8 +15,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnCopyResult;
     private Button btnCopyIV;
     private Button btnTextModeEncrypt;
+    private Button btnTextModeDecrypt;
     private LinearLayout mainLinearLayout;
     private LinearLayout textModeLayout;
     private LinearLayout textModeIVLayout;
@@ -108,7 +106,11 @@ public class MainActivity extends AppCompatActivity {
         btnRndIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                editTextIV.setText(enc.getRandomIV());
+                try {
+                    editTextIV.setText(enc.getRandomIV());
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -139,6 +141,14 @@ public class MainActivity extends AppCompatActivity {
                 startStringEncryption();
             }
         });
+
+        btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
+        btnTextModeDecrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startStringDecryption();
+            }
+        });
     }
 
     private void fillSpinners(){
@@ -150,8 +160,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void changeAlgorithm(String name){
         enc.setCurrentAlgoritm(name);
-        Algorithm current = enc.getCurrentAlgorithm();
-        if(current.hasIV()){
+        if(enc.getCurrentAlgorithm().hasIV){
             textModeIVLayout.setVisibility(View.VISIBLE);
         }else{
             textModeIVLayout.setVisibility(View.GONE);
@@ -160,6 +169,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void startStringEncryption(){
         String result = enc.encryptString(editTextPlaintext.getText().toString(), editTextPassword.getText().toString(), editTextIV.getText().toString());
+        textViewResult.setText(result);
+    }
+
+    private void startStringDecryption(){
+        String result = enc.decryptString(editTextPlaintext.getText().toString(), editTextPassword.getText().toString(), editTextIV.getText().toString());
         textViewResult.setText(result);
     }
 }

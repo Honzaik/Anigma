@@ -1,15 +1,24 @@
 package xyz.honzaik.anigma;
 
-public class Algorithm {
+import java.security.SecureRandom;
 
-    public String id;
+public abstract class Algorithm {
 
-    public Algorithm(String id){
-        this.id = id;
+    public String name;
+    public boolean hasIV;
+    protected SecureRandom random;
+
+    public Algorithm(Algorithms algo, SecureRandom random){
+        this.name = algo.getName();
+        this.hasIV = algo.hasIV();
+        this.random = random;
+
     }
 
-    public boolean hasIV(){
-        return !id.contains("ECB");
-    }
+    public abstract int getBlockSize();
+    public abstract String encryptString(String plaintext, String password, String IV);
+    public abstract String encryptString(String plaintext, String password);
+    public abstract String decryptString(String plaintext, String password, String IV);
+    public abstract String decryptString(String plaintext, String password);
 
 }
