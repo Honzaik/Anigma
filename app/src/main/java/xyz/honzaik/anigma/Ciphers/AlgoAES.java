@@ -31,10 +31,12 @@ import xyz.honzaik.anigma.Tasks.FileTaskState;
 public class AlgoAES extends Algorithm{
 
     private BlockCipher cipher;
+    private static final int KEY_SIZE = 16; //in bytes
 
     public AlgoAES(Algorithms algo, SecureRandom random) {
         super(algo, random);
         this.cipher = new AESEngine();
+
     }
 
     @Override
@@ -127,7 +129,7 @@ public class AlgoAES extends Algorithm{
         }
         bytesProcessed = gcmAES.doFinal(outputBuffer, 0);
         outputStream.write(outputBuffer, 0, bytesProcessed);
-
+        Log.d(MainActivity.TAG, "file size: " + task.output.length());
     }
 
     @Override
@@ -141,12 +143,13 @@ public class AlgoAES extends Algorithm{
         long bytesToDecrypt = task.input.length()- (BCRYPT_SALT_LENGTH+cipher.getBlockSize());
         byte[] key = BCrypt.generate(task.password.getBytes("UTF-8"), salt, BCRYPT_COST);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
+
         GCMBlockCipher gcmAES = new GCMBlockCipher(cipher);
         gcmAES.init(false, params);
 
         byte[] inputBuffer = new byte[1024*1024];
         Log.d(MainActivity.TAG, gcmAES.getOutputSize(inputBuffer.length) + " " + gcmAES.getUpdateOutputSize(inputBuffer.length));
-        byte[] outputBuffer = new byte[inputBuffer.length*2];
+        byte[] outputBuffer = new byte[gcmAES.getOutputSize(inputBuffer.length)+16];
         long bytesReadTotal = 0;
         int bytesRead = 0;
         int bytesProcessed = 0;
@@ -169,6 +172,7 @@ public class AlgoAES extends Algorithm{
         }
         bytesProcessed = gcmAES.doFinal(outputBuffer, 0);
         outputStream.write(outputBuffer, 0, bytesProcessed);
+        Log.d(MainActivity.TAG, "output length: " + task.output.length() + " processed: " + bytesProcessed);
     }
 
 

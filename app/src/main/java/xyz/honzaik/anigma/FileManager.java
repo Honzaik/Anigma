@@ -67,8 +67,11 @@ public class FileManager {
         ArrayList<String> fileList = getFilesPath();
         int counter = -1;
         for (String filePath : fileList){
-            if(filePath.contains(path + ".encrypted.")){
-                int temp = Integer.parseInt(filePath.substring(filePath.lastIndexOf(suffix)+suffix.length(),filePath.length()));
+            if(filePath.contains(path + suffix)){
+                int numberStartIndex = filePath.lastIndexOf(suffix)+suffix.length();
+                int numberEndIndex = filePath.indexOf(".", numberStartIndex);
+                Log.d(MainActivity.TAG, filePath + " " + numberStartIndex + " " + numberEndIndex);
+                int temp = Integer.parseInt(filePath.substring(numberStartIndex,(numberEndIndex != -1) ? numberEndIndex : filePath.length()));
                 if(temp > counter){
                     counter = temp;
                 }
@@ -80,7 +83,15 @@ public class FileManager {
 
     public File getOutputFile(boolean encrypting, File input){
         String inputPath = input.getAbsolutePath();
-        String outputPath = inputPath + getUniqueFileExtension(encrypting, inputPath);
+        String newInputPath = inputPath;
+        int extensionIndexStart = inputPath.lastIndexOf(".");
+        String extension = "";
+        if(extensionIndexStart != -1){
+            extension = inputPath.substring(extensionIndexStart);
+            newInputPath = newInputPath.substring(0, extensionIndexStart);
+        }
+        Log.d(MainActivity.TAG, "extension: " + extension + " unique extension: " + getUniqueFileExtension(encrypting, newInputPath));
+        String outputPath = newInputPath + getUniqueFileExtension(encrypting, newInputPath) + extension;
         Log.d(MainActivity.TAG, outputPath);
         return new File(outputPath);
     }

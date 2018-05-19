@@ -430,6 +430,7 @@ public class MainActivity extends AppCompatActivity {
             textViewFileResult.setText(resultString);
             if (task.getState() != FileTaskState.SUCCESS) {
                 textViewFileResult.setTextColor(Color.RED);
+                task.output.delete();
             } else {
                 textViewFileResult.setTextColor(Color.BLACK);
             }
@@ -467,6 +468,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void startStringDecryption(){
         enc.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        loadFiles();
     }
 
     private void switchMode(){
