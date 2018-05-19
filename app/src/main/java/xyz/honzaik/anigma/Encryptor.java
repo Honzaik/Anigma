@@ -39,16 +39,6 @@ public class Encryptor {
             }
 
         }
-        BouncyCastleProvider prov = new BouncyCastleProvider();
-
-        System.out.println("---------------------------");
-        for (BouncyCastleProvider.Service s: prov.getServices()){
-            if (s.getType().equals("Cipher") || s.getType().equals("SecretKeyFactory")){
-                System.out.println("\t"+s.getType()+" "+ s.getAlgorithm());
-            }
-
-        }
-        System.out.println("##########################");
 
     }
 
@@ -62,6 +52,7 @@ public class Encryptor {
     public void setCurrentAlgoritm(String name){
         currentAlgorithm = algorithmList.get(name);
         stringTask.setAlgo(currentAlgorithm);
+        fileTask.setAlgo(currentAlgorithm);
     }
 
     public Algorithm getCurrentAlgorithm(){

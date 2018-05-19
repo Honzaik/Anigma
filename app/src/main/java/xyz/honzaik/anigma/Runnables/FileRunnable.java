@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import xyz.honzaik.anigma.Tasks.FileTask;
+import xyz.honzaik.anigma.Tasks.FileTaskState;
 import xyz.honzaik.anigma.Tasks.StringTask;
 import xyz.honzaik.anigma.Tasks.StringTaskState;
 
@@ -25,20 +26,16 @@ public class FileRunnable implements Runnable {
         Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
         if(task.isEncrypting()){
             try {
-                if (task.algo.hasIV) {
-                    task.algo.encryptFile(task.input, task.output, task.password, task.IV);
-                } else {
-                    task.algo.encryptFile(task.input, task.output, task.password, task.IV);
-                }
-                task.setState(StringTaskState.SUCCESS);
+                task.algo.encryptFile(task);
+                task.setState(FileTaskState.SUCCESS);
             } catch (UnsupportedEncodingException e) {
-                task.setState(StringTaskState.ERROR_DECODING);
+                task.setState(FileTaskState.ERROR_DECODING);
                 e.printStackTrace();
             } catch (InvalidCipherTextException e) {
-                task.setState(StringTaskState.ERROR_ENCRYPTION);
+                task.setState(FileTaskState.ERROR_ENCRYPTION);
                 e.printStackTrace();
             } catch (IllegalArgumentException e) {
-                task.setState(StringTaskState.ERROR_DECODING);
+                task.setState(FileTaskState.ERROR_DECODING);
                 e.printStackTrace();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -46,6 +43,5 @@ public class FileRunnable implements Runnable {
                 e.printStackTrace();
             }
         }
-        task.finish();
     }
 }

@@ -25,6 +25,8 @@ import java.security.SecureRandom;
 import xyz.honzaik.anigma.Algorithm;
 import xyz.honzaik.anigma.Algorithms;
 import xyz.honzaik.anigma.MainActivity;
+import xyz.honzaik.anigma.Tasks.FileTask;
+import xyz.honzaik.anigma.Tasks.FileTaskState;
 
 public class AlgoAES extends Algorithm{
 
@@ -88,43 +90,48 @@ public class AlgoAES extends Algorithm{
     }
 
     @Override
-    public void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
+    public void encryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
         byte[] salt = new byte[BCRYPT_SALT_LENGTH];
         random.nextBytes(salt);
-        byte[] key = BCrypt.generate(password.getBytes("UTF-8"), salt, BCRYPT_COST);
-        Log.d(MainActivity.TAG, "ecrypting " + input.length() + " bytes");
-        FileInputStream inputStream = new FileInputStream(input);
-        FileOutputStream outputStream = new FileOutputStream(output);
+        byte[] key = BCrypt.generate(task.password.getBytes("UTF-8"), salt, BCRYPT_COST);
+        Log.d(MainActivity.TAG, "ecrypting " + task.input.length() + " bytes");
+        FileInputStream inputStream = new FileInputStream(task.input);
+        FileOutputStream outputStream = new FileOutputStream(task.output);
+        byte[] IVBytes = Base64.decode(task.IV, Base64.DEFAULT);
+        outputStream.write(salt);
+        outputStream.write(IVBytes);
 
-        byte[] IVBytes = Base64.decode(IV, Base64.DEFAULT);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
         GCMBlockCipher gcmAES = new GCMBlockCipher(cipher);
         gcmAES.init(true, params);
-        byte[] outputBuffer = new byte[cipher.getBlockSize()];
-        byte[] inputBuffer = new byte[cipher.getBlockSize()];
+        byte[] inputBuffer = new byte[1024*1024];
+        byte[] outputBuffer = new byte[gcmAES.getOutputSize(inputBuffer.length)];
         long bytesReadTotal = 0;
-        while(bytesReadTotal < input.length()){
-            int bytesRead = inputStream.read(inputBuffer);
+        int bytesRead = 0;
+        int bytesEncrypted = 0;
+        while(bytesReadTotal < task.input.length()){
+            bytesRead = inputStream.read(inputBuffer);
             if(bytesRead == -1){
                 throw new IOException("nothing to read anymore");
-            }else{
-
             }
-            gcmAES.processBytes(inputBuffer,0, inputBuffer.length, outputBuffer, 0);
+            bytesEncrypted = gcmAES.processBytes(inputBuffer,0, bytesRead, outputBuffer, 0);
             bytesReadTotal += bytesRead;
-            outputStream.write(outputBuffer);
+            outputStream.write(outputBuffer, 0, bytesEncrypted);
+            int newProgress = Math.round(((float)bytesReadTotal / task.input.length())*100);
+            Log.d(MainActivity.TAG, newProgress + " " + task.progress + " " + bytesReadTotal + " " + task.input.length());
+            if(newProgress != task.progress){
+                task.progress = newProgress;
+                task.setState(FileTaskState.UPDATE_PROGRESS);
+            }
         }
-        gcmAES.doFinal(outputBuffer, 0);
-        outputStream.write(outputBuffer);
-    }
-
-    @Override
-    public void encryptFile(File input, File output, String password) {
+        bytesEncrypted = gcmAES.doFinal(outputBuffer, 0);
+        outputStream.write(outputBuffer, 0, bytesEncrypted);
 
     }
 
+
     @Override
-    public String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException{
+    public String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         return null;
     }
 }

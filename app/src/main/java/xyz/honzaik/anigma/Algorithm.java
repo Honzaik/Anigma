@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
 import java.security.SecureRandom;
 
+import xyz.honzaik.anigma.Tasks.FileTask;
+
 public abstract class Algorithm {
 
     protected static final int BCRYPT_COST = 10;
@@ -28,7 +30,7 @@ public abstract class Algorithm {
     public abstract String encryptString(String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
     public abstract String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
     public abstract String decryptString(String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
-    public abstract void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException;
-    public abstract void encryptFile(File input, File output, String password);
+    public abstract void encryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException;
+    public abstract void decryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException;
 
 }

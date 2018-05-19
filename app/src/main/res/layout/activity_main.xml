@@ -27,37 +27,37 @@
                 android:orientation="horizontal">
 
                 <Button
-                    android:backgroundTint="@color/btnColor1"
-                    android:textColor="@color/btnTextColor"
                     android:id="@+id/btnTextMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/btn_text_mode" />
+                    android:backgroundTint="@color/btnColor1"
+                    android:text="@string/btn_text_mode"
+                    android:textColor="@color/btnTextColor" />
 
                 <Button
-                    android:backgroundTint="@color/btnColor1"
-                    android:textColor="@color/btnTextColor"
                     android:id="@+id/btnFileMode"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/btn_file_mode" />
+                    android:backgroundTint="@color/btnColor1"
+                    android:text="@string/btn_file_mode"
+                    android:textColor="@color/btnTextColor" />
 
             </LinearLayout>
+
+            <Spinner
+                android:id="@+id/spinnerTextAlgo"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:spinnerMode="dialog" />
 
             <LinearLayout
                 android:id="@+id/LinearLayoutTextMode"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="gone">
-
-                <Spinner
-                    android:id="@+id/spinnerTextAlgo"
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:spinnerMode="dialog" />
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,7 +112,7 @@
                         android:inputType="text" />
 
                     <LinearLayout
-                        android:id="@+id/LinearLayoutIV"
+                        android:id="@+id/LinearLayoutTextIV"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal"
@@ -240,12 +240,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <ListView
                     android:id="@+id/listViewFiles"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="100dp"
                     android:layout_weight="2">
 
                 </ListView>
@@ -284,7 +284,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="2"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <EditText
                         android:id="@+id/editTextFileModeEncryptionPassword"
@@ -296,7 +296,7 @@
                         android:inputType="text" />
 
                     <LinearLayout
-                        android:id="@+id/LinearLayoutIV"
+                        android:id="@+id/LinearLayoutFileIV"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="horizontal"
@@ -341,7 +341,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:backgroundTint="@color/btnColor1"
-                        android:text="@string/text_mode_encrypt_button"
+                        android:text="@string/file_mode_encrypt_button"
                         android:textColor="@color/btnTextColor" />
 
                     <ProgressBar
@@ -358,10 +358,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="2"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <EditText
-                        android:id="@+id/editTextFileModeEncryptionPassword"
+                        android:id="@+id/editTextFileModeDecryptionPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
@@ -375,7 +376,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:backgroundTint="@color/btnColor1"
-                        android:text="@string/text_mode_encrypt_button"
+                        android:text="@string/file_mode_decrypt_button"
                         android:textColor="@color/btnTextColor" />
 
                     <ProgressBar

@@ -18,14 +18,16 @@ public class FileTask {
     public File output;
     public String password;
     public String IV;
-    private boolean encrypting = true;
+    public boolean encrypting = true;
     public String result = null;
     private Handler mainHandler;
-    private StringTaskState state;
+    private FileTaskState state;
+    public int progress;
 
     public FileTask(Handler mainHandler){
         this.mainHandler = mainHandler;
-        this.state = StringTaskState.START;
+        this.state = FileTaskState.START;
+        this.progress = 0;
     }
 
     public void setAlgo(Algorithm algo){
@@ -33,6 +35,7 @@ public class FileTask {
     }
 
     public void encryptFile(File input, File output, String password, String IV){
+        this.progress = 0;
         Thread thread = new Thread(new FileRunnable(this));
         this.input = input;
         this.output = output;
@@ -43,6 +46,7 @@ public class FileTask {
     }
 
     public void decryptFile(File input, File output, String password){
+        this.progress = 0;
         Thread thread = new Thread(new FileRunnable(this));
         this.input = input;
         this.output = output;
@@ -51,29 +55,14 @@ public class FileTask {
         thread.start();
     }
 
-    public void finish(){
-        switch(state){
-            case START:
-                Log.d(MainActivity.TAG, "NOTHING HAPPENED ON THREAD");
-                break;
-            case SUCCESS:
-                Log.d(MainActivity.TAG, "DONE");
-
-        }
+    public void setState(FileTaskState state){
+        this.state = state;
         Message completeMessage = mainHandler.obtainMessage(0, this);
         completeMessage.sendToTarget();
     }
 
-    public void setState(StringTaskState state){
-        this.state = state;
-    }
-
-    public StringTaskState getState(){
+    public FileTaskState getState(){
         return this.state;
-    }
-
-    public void setResult(String result){
-        this.result = result;
     }
 
     public boolean isEncrypting(){

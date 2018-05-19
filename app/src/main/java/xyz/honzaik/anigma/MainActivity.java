@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBar;
@@ -27,8 +26,9 @@ import android.os.Message;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
+import xyz.honzaik.anigma.Tasks.FileTask;
+import xyz.honzaik.anigma.Tasks.FileTaskState;
 import xyz.honzaik.anigma.Tasks.StringTask;
 import xyz.honzaik.anigma.Tasks.StringTaskState;
 
@@ -40,28 +40,43 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnTextMode;
     private Button btnFileMode;
-    private Button btnRndIV;
+    private Button btnTextRndIV;
+    private Button btnFileRndIV;
     private Button btnCopyResult;
-    private Button btnCopyIV;
+    private Button btnTextCopyIV;
+    private Button btnFileCopyIV;
     private Button btnTextModeEncrypt;
     private Button btnTextModeDecrypt;
+    private Button btnFileModeEncrypt;
+    private Button btnFileModeDecrypt;
     private Button btnTextModeEncryption;
     private Button btnTextModeDecryption;
+    private Button btnFileModeEncryption;
+    private Button btnFileModeDecryption;
     private LinearLayout mainLinearLayout;
     private LinearLayout textModeLayout;
     private LinearLayout textModeEncryptionLayout;
     private LinearLayout textModeDecryptionLayout;
     private LinearLayout textModeIVLayout;
     private LinearLayout fileModeLayout;
+    private LinearLayout fileModeEncryptionLayout;
+    private LinearLayout fileModeDecryptionLayout;
+    private LinearLayout fileModeIVLayout;
     private Spinner spinnerTextAlgo;
     private EditText editTextPlaintext;
     private EditText editTextCiphertext;
     private EditText editTextTextModeEncryptionPassword;
     private EditText editTextTextModeDecryptionPassword;
+    private EditText editTextFileModeEncryptionPassword;
+    private EditText editTextFileModeDecryptionPassword;
     private EditText editTextTextModeIV;
-    private TextView textViewResult;
-    private ProgressBar progressBarEnc;
-    private ProgressBar progressBarDec;
+    private EditText editTextFileModeIV;
+    private TextView textViewTextResult;
+    private TextView textViewFileResult;
+    private ProgressBar progressTextEnc;
+    private ProgressBar progressTextDec;
+    private ProgressBar progressFileEnc;
+    private ProgressBar progressFileDec;
 
     private Handler mainHandler;
 
@@ -98,13 +113,18 @@ public class MainActivity extends AppCompatActivity {
         editTextCiphertext = (EditText) findViewById(R.id.editTextCiphertext);
         editTextTextModeEncryptionPassword = (EditText) findViewById(R.id.editTextTextModeEncryptionPassword);
         editTextTextModeDecryptionPassword = (EditText) findViewById(R.id.editTextTextModeDecryptionPassword);
+        editTextFileModeEncryptionPassword = (EditText) findViewById(R.id.editTextFileModeEncryptionPassword);
+        editTextFileModeDecryptionPassword = (EditText) findViewById(R.id.editTextFileModeDecryptionPassword);
         editTextTextModeIV = (EditText) findViewById(R.id.editTextTextModeIV);
+        editTextFileModeIV = (EditText) findViewById(R.id.editTextFileModeIV);
 
         textModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextMode);
         fileModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileMode);
 
         textModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeEncryption);
         textModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeDecryption);
+        fileModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeEncryption);
+        fileModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeDecryption);
 
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setCustomView(R.layout.action_bar);
@@ -182,11 +202,11 @@ public class MainActivity extends AppCompatActivity {
         fillSpinners();
         enc.printAvailableAlgos();
 
-        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutIV);
+        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextIV);
 
 
-        btnRndIV = (Button) findViewById(R.id.btnRndIV);
-        btnRndIV.setOnClickListener(new View.OnClickListener() {
+        btnTextRndIV = (Button) findViewById(R.id.btnTextRndIV);
+        btnTextRndIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
@@ -199,26 +219,27 @@ public class MainActivity extends AppCompatActivity {
 
         clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
-        textViewResult = (TextView) findViewById(R.id.textModeResult);
+        textViewTextResult = (TextView) findViewById(R.id.textModeResult);
+        textViewFileResult = (TextView) findViewById(R.id.fileModeResult);
 
         btnCopyResult = (Button) findViewById(R.id.btnCopyResult);
         btnCopyResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clipboard.setPrimaryClip(ClipData.newPlainText("resultString", textViewResult.getText().toString().trim()));
+                clipboard.setPrimaryClip(ClipData.newPlainText("resultString", textViewTextResult.getText().toString().trim()));
             }
         });
 
-        btnCopyIV = (Button) findViewById(R.id.btnCopyIV);
-        btnCopyIV.setOnClickListener(new View.OnClickListener() {
+        btnTextCopyIV = (Button) findViewById(R.id.btnCopyTextIV);
+        btnTextCopyIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clipboard.setPrimaryClip(ClipData.newPlainText("IV", editTextTextModeIV.getText().toString().trim()));
             }
         });
 
-        progressBarEnc = (ProgressBar) findViewById(R.id.textModeProgressEnc);
-        progressBarDec = (ProgressBar) findViewById(R.id.textModeProgressDec);
+        progressTextEnc = (ProgressBar) findViewById(R.id.textModeProgressEnc);
+        progressTextDec = (ProgressBar) findViewById(R.id.textModeProgressDec);
 
         btnTextModeEncrypt = (Button) findViewById(R.id.btnTextModeEncrypt);
         btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
@@ -226,14 +247,14 @@ public class MainActivity extends AppCompatActivity {
         btnTextModeEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBarEnc.setVisibility(View.VISIBLE);
+                progressTextEnc.setVisibility(View.VISIBLE);
                 startStringEncryption();
             }
         });
         btnTextModeDecrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBarDec.setVisibility(View.VISIBLE);
+                progressTextDec.setVisibility(View.VISIBLE);
                 startStringDecryption();
             }
         });
@@ -251,46 +272,173 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, item);
             }
         });
+
+        btnFileModeEncryption = (Button) findViewById(R.id.btnFileModeEncryptionMode);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnFileModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+        }
+        btnFileModeDecryption = (Button) findViewById(R.id.btnFileModeDecryptionMode);
+
+        btnFileModeEncryption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fileModeEncryptionLayout.setVisibility(View.VISIBLE);
+                fileModeDecryptionLayout.setVisibility(View.GONE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnFileModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+                    btnFileModeDecryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2)));
+                }
+            }
+        });
+
+        btnFileModeDecryption.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fileModeEncryptionLayout.setVisibility(View.GONE);
+                fileModeDecryptionLayout.setVisibility(View.VISIBLE);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    btnFileModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2)));
+                    btnFileModeDecryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
+                }
+
+            }
+        });
+
+        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextIV);
+
+
+        btnFileRndIV = (Button) findViewById(R.id.btnFileRndIV);
+        btnFileRndIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    editTextFileModeIV.setText(enc.getRandomIV());
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        btnFileCopyIV = (Button) findViewById(R.id.btnFileCopyIV);
+        btnFileCopyIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clipboard.setPrimaryClip(ClipData.newPlainText("IV", editTextFileModeIV.getText().toString().trim()));
+            }
+        });
+
+        progressFileEnc = (ProgressBar) findViewById(R.id.progressBarFileEncryption);
+        progressFileDec = (ProgressBar) findViewById(R.id.progressBarFileDecryption);
+
+        btnFileModeEncrypt = (Button) findViewById(R.id.btnFileModeEncrypt);
+        btnFileModeDecrypt = (Button) findViewById(R.id.btnFileModeDecrypt);
+
+        btnFileModeEncrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressFileEnc.setVisibility(View.VISIBLE);
+                startFileEncryption();
+            }
+        });
+        btnFileModeDecrypt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                progressTextDec.setVisibility(View.VISIBLE);
+                startFileDecryption();
+            }
+        });
     }
 
     private void initHandler() {
         mainHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message inputMessage) {
-                StringTask task = (StringTask) inputMessage.obj;
-                String resultString = null;
-                switch (task.getState()) {
-                    case SUCCESS:
-                        resultString = task.result;
-                        break;
-                    case ERROR_ENCRYPTION:
-                        resultString = getResources().getString(R.string.text_mode_error_encryption);
-                        break;
-                    case ERROR_DECRYPTION:
-                        resultString = getResources().getString(R.string.text_mode_error_decryption);
-                        break;
-                    case ERROR_DECODING:
-                        resultString = getResources().getString(R.string.text_mode_error_decoding);
-                        break;
-                    case START:
-                        resultString = getResources().getString(R.string.text_mode_error_nothing);
-                        break;
-                    default:
-                }
-                if (task.getState() != StringTaskState.SUCCESS) {
-                    textViewResult.setTextColor(Color.RED);
-                } else {
-                    textViewResult.setTextColor(Color.BLACK);
-                }
-                textViewResult.setText(resultString);
-                if(task.isEncrypting()){
-                    progressBarEnc.setVisibility(View.GONE);
+                if(inputMessage.obj instanceof StringTask){
+                    handleMessageFromStringTask((StringTask)inputMessage.obj);
                 }else{
-                    progressBarDec.setVisibility(View.GONE);
+                    handleMessageFromFileTask((FileTask)inputMessage.obj);
                 }
             }
 
         };
+    }
+
+    private void handleMessageFromStringTask(StringTask task){
+        String resultString = null;
+        switch (task.getState()) {
+            case SUCCESS:
+                resultString = task.result;
+                break;
+            case ERROR_ENCRYPTION:
+                resultString = getResources().getString(R.string.text_mode_error_encryption);
+                break;
+            case ERROR_DECRYPTION:
+                resultString = getResources().getString(R.string.text_mode_error_decryption);
+                break;
+            case ERROR_DECODING:
+                resultString = getResources().getString(R.string.text_mode_error_decoding);
+                break;
+            case START:
+                resultString = getResources().getString(R.string.text_mode_error_nothing);
+                break;
+            default:
+        }
+        if (task.getState() != StringTaskState.SUCCESS) {
+            textViewTextResult.setTextColor(Color.RED);
+        } else {
+            textViewTextResult.setTextColor(Color.BLACK);
+        }
+        textViewTextResult.setText(resultString);
+        if(task.isEncrypting()){
+            progressTextEnc.setVisibility(View.GONE);
+        }else{
+            progressTextDec.setVisibility(View.GONE);
+        }
+    }
+
+    private void handleMessageFromFileTask(FileTask task){
+        String resultString = null;
+        switch (task.getState()) {
+            case SUCCESS:
+                if(task.isEncrypting()){
+                    resultString = getResources().getString(R.string.file_mode_success_encryption);
+                }else{
+                    resultString = getResources().getString(R.string.file_mode_success_decryption);
+                }
+                break;
+            case ERROR_ENCRYPTION:
+                resultString = getResources().getString(R.string.file_mode_error_encryption);
+                break;
+            case ERROR_DECRYPTION:
+                resultString = getResources().getString(R.string.file_mode_error_decryption);
+                break;
+            case ERROR_DECODING:
+                resultString = getResources().getString(R.string.file_mode_error_decoding);
+                break;
+            case UPDATE_PROGRESS:
+                if(task.isEncrypting()){
+                    progressFileEnc.setProgress(task.progress);
+                }else{
+                    progressFileDec.setProgress(task.progress);
+                }
+            case START:
+                resultString = getResources().getString(R.string.file_mode_error_nothing);
+                break;
+            default:
+        }
+        if(task.getState() != FileTaskState.UPDATE_PROGRESS){
+            textViewFileResult.setText(resultString);
+            if (task.getState() != FileTaskState.SUCCESS) {
+                textViewFileResult.setTextColor(Color.RED);
+            } else {
+                textViewFileResult.setTextColor(Color.BLACK);
+            }
+            if(task.isEncrypting()){
+                progressFileEnc.setVisibility(View.GONE);
+            } else {
+                progressFileDec.setVisibility(View.GONE);
+            }
+        }
     }
 
     public Handler getHandler(){
@@ -341,10 +489,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFileEncryption(){
+        progressFileEnc.setProgress(0);
         String path = ((TextView) oldSelectedItem).getText().toString();
         File input = new File(path);
-        File output = new File(path + "_encrypted");
-        enc.getFileTask().encryptFile(input, output, );
+        File output = fileManager.getOutputFile(true, input);
+        enc.getFileTask().encryptFile(input, output, editTextFileModeEncryptionPassword.getText().toString(), editTextFileModeIV.getText().toString());
+    }
+
+    private void startFileDecryption(){
+        progressFileDec.setProgress(0);
+        String path = ((TextView) oldSelectedItem).getText().toString();
+        File input = new File(path);
+        File output = fileManager.getOutputFile(false, input);
+        enc.getFileTask().decryptFile(input, output, editTextFileModeDecryptionPassword.getText().toString());
     }
 
 }

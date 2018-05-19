@@ -23,6 +23,7 @@ import java.security.SecureRandom;
 import xyz.honzaik.anigma.Algorithm;
 import xyz.honzaik.anigma.Algorithms;
 import xyz.honzaik.anigma.MainActivity;
+import xyz.honzaik.anigma.Tasks.FileTask;
 
 public class Algo3DES extends Algorithm{
 
@@ -86,12 +87,7 @@ public class Algo3DES extends Algorithm{
     }
 
     @Override
-    public void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
-
-    }
-
-    @Override
-    public void encryptFile(File input, File output, String password) {
+    public void encryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
 
     }
 
