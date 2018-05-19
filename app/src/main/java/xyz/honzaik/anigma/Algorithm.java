@@ -1,6 +1,10 @@
 package xyz.honzaik.anigma;
 
 import org.spongycastle.crypto.InvalidCipherTextException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
 import java.security.SecureRandom;
@@ -24,5 +28,7 @@ public abstract class Algorithm {
     public abstract String encryptString(String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
     public abstract String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
     public abstract String decryptString(String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException;
+    public abstract void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException;
+    public abstract void encryptFile(File input, File output, String password);
 
 }

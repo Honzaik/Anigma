@@ -12,6 +12,11 @@ import org.spongycastle.crypto.modes.GCMBlockCipher;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.crypto.params.ParametersWithIV;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
 import java.nio.charset.StandardCharsets;
@@ -80,6 +85,42 @@ public class AlgoAES extends Algorithm{
         int additionalInfo = gcmAES.doFinal(outputBuffer, bytesDecrypted);
         Log.d(MainActivity.TAG, "decrypted result has " + outputBuffer.length + " bytes");
         return new String(outputBuffer, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
+        byte[] salt = new byte[BCRYPT_SALT_LENGTH];
+        random.nextBytes(salt);
+        byte[] key = BCrypt.generate(password.getBytes("UTF-8"), salt, BCRYPT_COST);
+        Log.d(MainActivity.TAG, "ecrypting " + input.length() + " bytes");
+        FileInputStream inputStream = new FileInputStream(input);
+        FileOutputStream outputStream = new FileOutputStream(output);
+
+        byte[] IVBytes = Base64.decode(IV, Base64.DEFAULT);
+        CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
+        GCMBlockCipher gcmAES = new GCMBlockCipher(cipher);
+        gcmAES.init(true, params);
+        byte[] outputBuffer = new byte[cipher.getBlockSize()];
+        byte[] inputBuffer = new byte[cipher.getBlockSize()];
+        long bytesReadTotal = 0;
+        while(bytesReadTotal < input.length()){
+            int bytesRead = inputStream.read(inputBuffer);
+            if(bytesRead == -1){
+                throw new IOException("nothing to read anymore");
+            }else{
+
+            }
+            gcmAES.processBytes(inputBuffer,0, inputBuffer.length, outputBuffer, 0);
+            bytesReadTotal += bytesRead;
+            outputStream.write(outputBuffer);
+        }
+        gcmAES.doFinal(outputBuffer, 0);
+        outputStream.write(outputBuffer);
+    }
+
+    @Override
+    public void encryptFile(File input, File output, String password) {
+
     }
 
     @Override

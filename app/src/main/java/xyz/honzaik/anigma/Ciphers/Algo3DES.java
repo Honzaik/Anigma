@@ -13,6 +13,9 @@ import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import org.spongycastle.crypto.params.KeyParameter;
 import org.spongycastle.crypto.params.ParametersWithIV;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
@@ -80,6 +83,16 @@ public class Algo3DES extends Algorithm{
         int additionalInfo = padded3DES.doFinal(outputBuffer, bytesDecrypted);
         Log.d(MainActivity.TAG, "decrypted result has " + outputBuffer.length + " bytes");
         return new String(outputBuffer, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public void encryptFile(File input, File output, String password, String IV) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
+
+    }
+
+    @Override
+    public void encryptFile(File input, File output, String password) {
+
     }
 
     @Override

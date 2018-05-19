@@ -11,6 +11,7 @@ import java.util.TreeMap;
 
 import xyz.honzaik.anigma.Ciphers.Algo3DES;
 import xyz.honzaik.anigma.Ciphers.AlgoAES;
+import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.StringTask;
 
 
@@ -20,12 +21,14 @@ public class Encryptor {
     private Algorithm currentAlgorithm;
     private SecureRandom random;
     private StringTask stringTask;
+    private FileTask fileTask;
     private MainActivity mainActivity;
 
     public Encryptor(MainActivity mainActivity){
         this.mainActivity = mainActivity;
         random = new SecureRandom();
         stringTask = new StringTask(mainActivity.getHandler());
+        fileTask = new FileTask(mainActivity.getHandler());
         algorithmList = new TreeMap<String, Algorithm>();
         for(Algorithms algo : Algorithms.values()){
             switch (algo){
@@ -78,5 +81,9 @@ public class Encryptor {
 
     public StringTask getStringTask() {
         return stringTask;
+    }
+
+    public FileTask getFileTask() {
+        return fileTask;
     }
 }

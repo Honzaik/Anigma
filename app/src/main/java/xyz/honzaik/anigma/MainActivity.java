@@ -6,21 +6,28 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Message;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import xyz.honzaik.anigma.Tasks.StringTask;
 import xyz.honzaik.anigma.Tasks.StringTaskState;
@@ -60,11 +67,19 @@ public class MainActivity extends AppCompatActivity {
 
     private ClipboardManager clipboard;
 
+    private boolean isTextMode = true;
+    private FileManager fileManager;
+    private ListView filesList;
+    private View oldSelectedItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         initHandler();
+
+        fileManager = new FileManager("Anigma");
+
 
         setContentView(R.layout.activity_main);
 
@@ -97,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
         btnTextMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                switchMode();
                 textModeLayout.setVisibility(View.VISIBLE);
                 fileModeLayout.setVisibility(View.GONE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -109,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         btnFileMode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                switchMode();
                 textModeLayout.setVisibility(View.GONE);
                 fileModeLayout.setVisibility(View.VISIBLE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -220,6 +237,20 @@ public class MainActivity extends AppCompatActivity {
                 startStringDecryption();
             }
         });
+
+        filesList = (ListView) findViewById(R.id.listViewFiles);
+        filesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(oldSelectedItem != null){
+                    oldSelectedItem.setBackgroundColor(getResources().getColor(R.color.blond));
+                }
+                oldSelectedItem = view;
+                view.setBackgroundColor(getResources().getColor(R.color.bitterLemon));
+                final String item = (String) parent.getItemAtPosition(position);
+                Log.d(TAG, item);
+            }
+        });
     }
 
     private void initHandler() {
@@ -288,6 +319,32 @@ public class MainActivity extends AppCompatActivity {
 
     private void startStringDecryption(){
         enc.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
+    }
+
+    private void switchMode(){
+        isTextMode = !isTextMode;
+        if(!isTextMode){
+            loadFiles();
+        }
+    }
+
+    private void loadFiles(){
+        Log.d(TAG, "loading files");
+        ArrayList<File> files = fileManager.getFiles();
+        ArrayList<String> pathList = new ArrayList<>();
+        for(File f : files){
+            pathList.add(f.getAbsolutePath());
+        }
+        final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item);
+        adapter.addAll(pathList);
+        filesList.setAdapter(adapter);
+    }
+
+    private void startFileEncryption(){
+        String path = ((TextView) oldSelectedItem).getText().toString();
+        File input = new File(path);
+        File output = new File(path + "_encrypted");
+        enc.getFileTask().encryptFile(input, output, );
     }
 
 }
