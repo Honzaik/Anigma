@@ -42,6 +42,21 @@ public class FileRunnable implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            try {
+                task.algo.decryptFile(task);
+                task.setState(FileTaskState.SUCCESS);
+            } catch (UnsupportedEncodingException e) {
+                task.setState(FileTaskState.ERROR_DECODING);
+                e.printStackTrace();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InvalidCipherTextException e) {
+                task.setState(FileTaskState.ERROR_DECRYPTION);
+                e.printStackTrace();
+            }
         }
     }
 }

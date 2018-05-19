@@ -92,6 +92,11 @@ public class Algo3DES extends Algorithm{
     }
 
     @Override
+    public void decryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
+
+    }
+
+    @Override
     public String encryptString(String plaintext, String password) {
         return null;
     }

@@ -106,17 +106,18 @@ public class AlgoAES extends Algorithm{
         gcmAES.init(true, params);
         byte[] inputBuffer = new byte[1024*1024];
         byte[] outputBuffer = new byte[gcmAES.getOutputSize(inputBuffer.length)];
+        Log.d(MainActivity.TAG, gcmAES.getOutputSize(inputBuffer.length) + " " + gcmAES.getUpdateOutputSize(inputBuffer.length));
         long bytesReadTotal = 0;
         int bytesRead = 0;
-        int bytesEncrypted = 0;
+        int bytesProcessed = 0;
         while(bytesReadTotal < task.input.length()){
             bytesRead = inputStream.read(inputBuffer);
             if(bytesRead == -1){
                 throw new IOException("nothing to read anymore");
             }
-            bytesEncrypted = gcmAES.processBytes(inputBuffer,0, bytesRead, outputBuffer, 0);
+            bytesProcessed = gcmAES.processBytes(inputBuffer,0, bytesRead, outputBuffer, 0);
             bytesReadTotal += bytesRead;
-            outputStream.write(outputBuffer, 0, bytesEncrypted);
+            outputStream.write(outputBuffer, 0, bytesProcessed);
             int newProgress = Math.round(((float)bytesReadTotal / task.input.length())*100);
             Log.d(MainActivity.TAG, newProgress + " " + task.progress + " " + bytesReadTotal + " " + task.input.length());
             if(newProgress != task.progress){
@@ -124,9 +125,50 @@ public class AlgoAES extends Algorithm{
                 task.setState(FileTaskState.UPDATE_PROGRESS);
             }
         }
-        bytesEncrypted = gcmAES.doFinal(outputBuffer, 0);
-        outputStream.write(outputBuffer, 0, bytesEncrypted);
+        bytesProcessed = gcmAES.doFinal(outputBuffer, 0);
+        outputStream.write(outputBuffer, 0, bytesProcessed);
 
+    }
+
+    @Override
+    public void decryptFile(FileTask task) throws FileNotFoundException, UnsupportedEncodingException, IOException, InvalidCipherTextException {
+        FileInputStream inputStream = new FileInputStream(task.input);
+        FileOutputStream outputStream = new FileOutputStream(task.output);
+        byte[] salt = new byte[BCRYPT_SALT_LENGTH];
+        byte[] IVBytes = new byte[cipher.getBlockSize()];
+        inputStream.read(salt);
+        inputStream.read(IVBytes);
+        long bytesToDecrypt = task.input.length()- (BCRYPT_SALT_LENGTH+cipher.getBlockSize());
+        byte[] key = BCrypt.generate(task.password.getBytes("UTF-8"), salt, BCRYPT_COST);
+        CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
+        GCMBlockCipher gcmAES = new GCMBlockCipher(cipher);
+        gcmAES.init(false, params);
+
+        byte[] inputBuffer = new byte[1024*1024];
+        Log.d(MainActivity.TAG, gcmAES.getOutputSize(inputBuffer.length) + " " + gcmAES.getUpdateOutputSize(inputBuffer.length));
+        byte[] outputBuffer = new byte[inputBuffer.length*2];
+        long bytesReadTotal = 0;
+        int bytesRead = 0;
+        int bytesProcessed = 0;
+        while(bytesReadTotal < bytesToDecrypt){
+            bytesRead = inputStream.read(inputBuffer);
+            if(bytesRead == -1){
+                throw new IOException("nothing to read anymore");
+            }
+            Log.d(MainActivity.TAG, "read: " + bytesRead + " outputbuffer: " + outputBuffer.length);
+            bytesProcessed = gcmAES.processBytes(inputBuffer,0, bytesRead, outputBuffer, 0);
+            Log.d(MainActivity.TAG, "processed: " + bytesProcessed);
+            bytesReadTotal += bytesRead;
+            outputStream.write(outputBuffer, 0, bytesProcessed);
+            int newProgress = Math.round(((float)bytesReadTotal / bytesToDecrypt)*100);
+            Log.d(MainActivity.TAG, newProgress + " " + task.progress + " " + bytesReadTotal + " " + task.input.length());
+            if(newProgress != task.progress){
+                task.progress = newProgress;
+                task.setState(FileTaskState.UPDATE_PROGRESS);
+            }
+        }
+        bytesProcessed = gcmAES.doFinal(outputBuffer, 0);
+        outputStream.write(outputBuffer, 0, bytesProcessed);
     }
 
 

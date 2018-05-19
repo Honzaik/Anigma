@@ -36,22 +36,24 @@ public class FileTask {
 
     public void encryptFile(File input, File output, String password, String IV){
         this.progress = 0;
-        Thread thread = new Thread(new FileRunnable(this));
         this.input = input;
         this.output = output;
         this.password = password;
         this.IV = IV;
         encrypting = true;
+        Thread thread = new Thread(new FileRunnable(this));
         thread.start();
     }
 
     public void decryptFile(File input, File output, String password){
+        Log.d(MainActivity.TAG, "tadyyy decrypting");
         this.progress = 0;
-        Thread thread = new Thread(new FileRunnable(this));
+
         this.input = input;
         this.output = output;
         this.password = password;
         encrypting = false;
+        Thread thread = new Thread(new FileRunnable(this));
         thread.start();
     }
 
