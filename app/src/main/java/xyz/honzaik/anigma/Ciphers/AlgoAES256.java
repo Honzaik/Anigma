@@ -4,34 +4,34 @@ import android.util.Log;
 
 import org.spongycastle.crypto.InvalidCipherTextException;
 import org.spongycastle.crypto.engines.AESEngine;
+import org.spongycastle.crypto.engines.RijndaelEngine;
 import org.spongycastle.crypto.modes.GCMBlockCipher;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.IllegalArgumentException;
 
 import xyz.honzaik.anigma.CipherList;
 import xyz.honzaik.anigma.CipherModes.AlgoGCMBlockCipher;
 import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 
-public class AlgoAES extends AlgoGCMBlockCipher{
+public class AlgoAES256 extends AlgoGCMBlockCipher {
 
-    public AlgoAES(CipherList algo) {
+    public AlgoAES256(CipherList algo) {
         super(algo);
         this.cipher = new GCMBlockCipher(new AESEngine());
-        this.KEY_SIZE = 32; //keysize in bytes
+        this.KEY_SIZE = 16; //keysize in bytes
         this.FILE_BLOCK_SIZE = 1024*1024*8; //8 MB
         Log.d(MainActivity.TAG, "here " + KEY_SIZE);
     }
 
     @Override
-    public String encryptString(String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException{
+    public String encryptString(String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         return encryptStringWithGCMBlockCipher(cipher, plaintext, password, IV);
     }
 
     @Override
-    public String decryptString(String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException{
+    public String decryptString(String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         return decryptStringWithGCMBlockCipher(cipher, ciphertext, password);
     }
 
@@ -44,7 +44,6 @@ public class AlgoAES extends AlgoGCMBlockCipher{
     public void decryptFile(FileTask task) throws IOException, InvalidCipherTextException {
         decryptFileWithGCMBlockCipher(cipher, task);
     }
-
 
     @Override
     public String encryptString(String plaintext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {

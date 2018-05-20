@@ -15,22 +15,30 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 
 import xyz.honzaik.anigma.Algorithm;
-import xyz.honzaik.anigma.Algorithms;
+import xyz.honzaik.anigma.CipherList;
 import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.FileTaskState;
 
 public abstract class AlgoGCMBlockCipher extends Algorithm{
-    public AlgoGCMBlockCipher(Algorithms algo, SecureRandom random) {
-        super(algo, random);
+
+    protected GCMBlockCipher cipher;
+
+    public AlgoGCMBlockCipher(CipherList algo) {
+        super(algo);
+    }
+
+    @Override
+    public int getBlockSize() {
+        return cipher.getUnderlyingCipher().getBlockSize();
     }
 
     protected String encryptStringWithGCMBlockCipher(GCMBlockCipher cipher, String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         random.nextBytes(salt);
         key = getKey(password, salt);
+        Log.d(MainActivity.TAG, "key bytes " + key.length + " " + KEY_SIZE + " " + name);
         byte[] plaintextBytes = plaintext.getBytes("UTF-8");
         byte[] IVBytes = Base64.decode(IV, Base64.DEFAULT);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);

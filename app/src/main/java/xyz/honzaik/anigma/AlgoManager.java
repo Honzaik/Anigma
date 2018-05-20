@@ -3,19 +3,18 @@ package xyz.honzaik.anigma;
 import android.util.Base64;
 import android.util.Log;
 
-import org.spongycastle.jce.provider.BouncyCastleProvider;
-
 import java.security.SecureRandom;
 import java.util.Map;
 import java.util.TreeMap;
 
 import xyz.honzaik.anigma.Ciphers.Algo3DES;
 import xyz.honzaik.anigma.Ciphers.AlgoAES;
+import xyz.honzaik.anigma.Ciphers.AlgoAES256;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.StringTask;
 
 
-public class Encryptor {
+public class AlgoManager {
 
     public TreeMap<String, Algorithm> algorithmList;
     private Algorithm currentAlgorithm;
@@ -24,20 +23,20 @@ public class Encryptor {
     private FileTask fileTask;
     private MainActivity mainActivity;
 
-    public Encryptor(MainActivity mainActivity){
+    public AlgoManager(MainActivity mainActivity){
         this.mainActivity = mainActivity;
         random = new SecureRandom();
         stringTask = new StringTask(mainActivity.getHandler());
         fileTask = new FileTask(mainActivity.getHandler());
         algorithmList = new TreeMap<String, Algorithm>();
-        for(Algorithms algo : Algorithms.values()){
+        for(CipherList algo : CipherList.values()){
             switch (algo){
-                case AES: algorithmList.put(algo.getName(), new AlgoAES(algo, random));
+                case AES: algorithmList.put(algo.getName(), new AlgoAES(algo));
                 break;
-                case TRIPLEDES: algorithmList.put(algo.getName(), new Algo3DES(algo, random));
+                case TRIPLEDES: algorithmList.put(algo.getName(), new Algo3DES(algo));
                 break;
+                case AES256: algorithmList.put(algo.getName(), new AlgoAES256(algo));
             }
-
         }
 
     }

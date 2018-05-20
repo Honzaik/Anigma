@@ -6,27 +6,19 @@ import org.spongycastle.crypto.modes.CBCBlockCipher;
 import org.spongycastle.crypto.paddings.PaddedBufferedBlockCipher;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.SecureRandom;
 
-import xyz.honzaik.anigma.Algorithm;
-import xyz.honzaik.anigma.Algorithms;
+import xyz.honzaik.anigma.CipherList;
 import xyz.honzaik.anigma.CipherModes.AlgoPaddedBufferedBlockCipher;
 import xyz.honzaik.anigma.Tasks.FileTask;
 
 public class Algo3DES extends AlgoPaddedBufferedBlockCipher{
 
-    private PaddedBufferedBlockCipher cipher;
 
-    public Algo3DES(Algorithms algo, SecureRandom random) {
-        super(algo, random);
+    public Algo3DES(CipherList algo) {
+        super(algo);
         this.cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new DESedeEngine()));
-        KEY_SIZE = 24;
-        FILE_BLOCK_SIZE = 1024*1024*8;
-    }
-
-    @Override
-    public int getBlockSize() {
-        return this.cipher.getUnderlyingCipher().getBlockSize();
+        this.KEY_SIZE = 24;
+        this.FILE_BLOCK_SIZE = 1024*1024*8;
     }
 
     @Override

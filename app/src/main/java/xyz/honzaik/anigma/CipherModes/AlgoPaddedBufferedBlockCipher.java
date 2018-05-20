@@ -15,22 +15,29 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
 
 import xyz.honzaik.anigma.Algorithm;
-import xyz.honzaik.anigma.Algorithms;
+import xyz.honzaik.anigma.CipherList;
 import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.FileTaskState;
 
 public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
-    public AlgoPaddedBufferedBlockCipher(Algorithms algo, SecureRandom random) {
-        super(algo, random);
+
+    protected PaddedBufferedBlockCipher cipher;
+
+    public AlgoPaddedBufferedBlockCipher(CipherList algo) {
+        super(algo);
+    }
+
+    @Override
+    public int getBlockSize() {
+        return cipher.getUnderlyingCipher().getBlockSize();
     }
 
     protected String encryptStringWithPaddedBufferedBlockCipher(PaddedBufferedBlockCipher cipher, String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException{
         random.nextBytes(salt);
-        key = SCrypt.generate(password.getBytes("UTF-8"), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_SIZE);
+        key = getKey(password, salt);
         byte[] plaintextBytes = plaintext.getBytes("UTF-8");
         byte[] IVBytes = Base64.decode(IV, Base64.DEFAULT);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
@@ -57,7 +64,7 @@ public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
         byte[] strippedCiphertextBytes = new byte[ciphertextBytes.length-SCRYPT_SALT_LENGTH-IVBytes.length];
         System.arraycopy(ciphertextBytes, SCRYPT_SALT_LENGTH+IVBytes.length, strippedCiphertextBytes, 0, strippedCiphertextBytes.length);
 
-        key = SCrypt.generate(password.getBytes("UTF-8"), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_SIZE);
+        key = getKey(password, salt);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
         cipher.init(false, params);
         byte[] outputBuffer = new byte[cipher.getOutputSize(strippedCiphertextBytes.length)];
@@ -108,7 +115,7 @@ public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
         inputStream.read(salt);
         inputStream.read(IVBytes);
         long bytesToDecrypt = task.input.length()- (SCRYPT_SALT_LENGTH + getBlockSize());
-        key = SCrypt.generate(task.password.getBytes("UTF-8"), salt, SCRYPT_N, SCRYPT_R, SCRYPT_P, KEY_SIZE);
+        key = getKey(task.password, salt);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
 
         cipher.init(false, params);

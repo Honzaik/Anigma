@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "Ang";
 
-    private Encryptor enc;
+    private AlgoManager enc;
 
     private Button btnTextMode;
     private Button btnFileMode;
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        enc = new Encryptor(this);
+        enc = new AlgoManager(this);
 
         mainLinearLayout = (LinearLayout) findViewById(R.id.LinearLayoutMain);
 

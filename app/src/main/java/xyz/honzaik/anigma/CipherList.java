@@ -1,12 +1,12 @@
 package xyz.honzaik.anigma;
 
-public enum Algorithms {
-    AES("AES-128", true), TRIPLEDES("3-DES", true);
+public enum CipherList {
+    AES("AES-128", true), TRIPLEDES("3-DES", true), AES256("AES-256", true);
 
     private final String name;
     private final boolean hasIV;
 
-    Algorithms(String s, boolean hasIV){
+    CipherList(String s, boolean hasIV){
         this.name = s;
         this.hasIV = hasIV;
     }
