@@ -16,7 +16,7 @@ public class FileManager {
         this.mainFolderName = mainFolderName;
     }
 
-    private File getMainFolder() throws Exception {
+    public File getMainFolder() throws Exception {
         File mainFolder = new File(Environment.getExternalStorageDirectory() + "/Anigma");
         if(mainFolder.exists() && mainFolder.isDirectory()){
             return mainFolder;
@@ -46,7 +46,7 @@ public class FileManager {
         return fileList;
     }
 
-    public ArrayList<String> getFilesPath(){
+    private ArrayList<String> getFilesPath(){
         ArrayList<String> fileList = new ArrayList<>();
         try{
             File mainFolder = getMainFolder();

@@ -26,4 +26,5 @@
     <string name="file_mode_error_decryption">There has been an error during decryption. Maybe the password is incorrect. Try again.</string>
     <string name="file_mode_error_decoding">There has been an error while decoding file. Maybe the IV is incorrect. Try again.</string>
     <string name="file_mode_error_nothing">Nothing happened. Try again.</string>
+    <string name="file_mode_files_helper">Place files in: </string>
 </resources>

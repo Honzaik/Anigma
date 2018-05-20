@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.ActionBar;
@@ -23,6 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Message;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -73,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText editTextFileModeIV;
     private TextView textViewTextResult;
     private TextView textViewFileResult;
+    private TextView textViewFileHelper;
     private ProgressBar progressTextEnc;
     private ProgressBar progressTextDec;
     private ProgressBar progressFileEnc;
@@ -192,6 +196,11 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String s = (String) parent.getSelectedItem();
                 changeAlgorithm(s);
+                if(textModeLayout.getVisibility() == View.VISIBLE){ //regenerate IV
+                    btnTextRndIV.performClick();
+                }else{
+                    btnFileRndIV.performClick();
+                }
             }
 
             @Override
@@ -347,6 +356,14 @@ public class MainActivity extends AppCompatActivity {
                 startFileDecryption();
             }
         });
+
+        textViewFileHelper = (TextView) findViewById(R.id.textViewFileHelper);
+        try{
+            textViewFileHelper.setText(getResources().getText(R.string.file_mode_files_helper) + " " + fileManager.getMainFolder().getAbsolutePath());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private void initHandler() {
@@ -489,7 +506,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<File> files = fileManager.getFiles();
         ArrayList<String> pathList = new ArrayList<>();
         for(File f : files){
-            pathList.add(f.getAbsolutePath());
+            pathList.add(f.getName());
         }
         final ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.list_item);
         adapter.addAll(pathList);
@@ -498,7 +515,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void startFileEncryption(){
         progressFileEnc.setProgress(0);
-        String path = ((TextView) oldSelectedItem).getText().toString();
+        String path = null;
+        try{
+            path = fileManager.getMainFolder() + "/" + ((TextView) oldSelectedItem).getText().toString();
+        } catch (Exception e){
+            e.printStackTrace();
+            return;
+        }
         File input = new File(path);
         File output = fileManager.getOutputFile(true, input);
         enc.getFileTask().encryptFile(input, output, editTextFileModeEncryptionPassword.getText().toString(), editTextFileModeIV.getText().toString());
@@ -506,7 +529,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void startFileDecryption(){
         progressFileDec.setProgress(0);
-        String path = ((TextView) oldSelectedItem).getText().toString();
+        String path = null;
+        try{
+            path = fileManager.getMainFolder() + "/" + ((TextView) oldSelectedItem).getText().toString();
+        } catch (Exception e){
+            e.printStackTrace();
+            return;
+        }
         File input = new File(path);
         File output = fileManager.getOutputFile(false, input);
         enc.getFileTask().decryptFile(input, output, editTextFileModeDecryptionPassword.getText().toString());
