@@ -439,6 +439,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 progressFileDec.setVisibility(View.GONE);
             }
+            loadFiles(); //refresh file list
         }
     }
 

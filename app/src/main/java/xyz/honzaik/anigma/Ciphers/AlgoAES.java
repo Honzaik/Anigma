@@ -21,8 +21,7 @@ public class AlgoAES extends AlgoGCMBlockCipher{
         super(algo);
         this.cipher = new GCMBlockCipher(new AESEngine());
         this.KEY_SIZE = 16; //keysize in bytes
-        this.FILE_BLOCK_SIZE = 1024*1024*8; //8 MB
-        Log.d(MainActivity.TAG, "here " + KEY_SIZE);
+        this.FILE_BLOCK_SIZE = 1024*1024*4; //4 MB
     }
 
     @Override

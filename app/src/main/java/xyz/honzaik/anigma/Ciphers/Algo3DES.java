@@ -18,7 +18,7 @@ public class Algo3DES extends AlgoPaddedBufferedBlockCipher{
         super(algo);
         this.cipher = new PaddedBufferedBlockCipher(new CBCBlockCipher(new DESedeEngine()));
         this.KEY_SIZE = 24;
-        this.FILE_BLOCK_SIZE = 1024*1024*8;
+        this.FILE_BLOCK_SIZE = 1024*1024*4;
     }
 
     @Override

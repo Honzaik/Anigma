@@ -38,7 +38,6 @@ public abstract class AlgoGCMBlockCipher extends Algorithm{
     protected String encryptStringWithGCMBlockCipher(GCMBlockCipher cipher, String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         random.nextBytes(salt);
         key = getKey(password, salt);
-        Log.d(MainActivity.TAG, "key bytes " + key.length + " " + KEY_SIZE + " " + name);
         byte[] plaintextBytes = plaintext.getBytes("UTF-8");
         byte[] IVBytes = Base64.decode(IV, Base64.DEFAULT);
         CipherParameters params = new ParametersWithIV(new KeyParameter(key), IVBytes);
