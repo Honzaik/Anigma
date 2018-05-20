@@ -9,11 +9,11 @@ import java.io.UnsupportedEncodingException;
 import java.lang.IllegalArgumentException;
 import java.security.SecureRandom;
 
-import xyz.honzaik.anigma.Algorithm;
 import xyz.honzaik.anigma.Algorithms;
+import xyz.honzaik.anigma.CipherModes.AlgoGCMBlockCipher;
 import xyz.honzaik.anigma.Tasks.FileTask;
 
-public class AlgoAES extends Algorithm{
+public class AlgoAES extends AlgoGCMBlockCipher{
 
     private GCMBlockCipher cipher;
 

@@ -343,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
         btnFileModeDecrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressTextDec.setVisibility(View.VISIBLE);
+                progressFileDec.setVisibility(View.VISIBLE);
                 startFileDecryption();
             }
         });

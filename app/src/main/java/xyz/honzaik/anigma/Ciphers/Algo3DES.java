@@ -10,9 +10,10 @@ import java.security.SecureRandom;
 
 import xyz.honzaik.anigma.Algorithm;
 import xyz.honzaik.anigma.Algorithms;
+import xyz.honzaik.anigma.CipherModes.AlgoPaddedBufferedBlockCipher;
 import xyz.honzaik.anigma.Tasks.FileTask;
 
-public class Algo3DES extends Algorithm{
+public class Algo3DES extends AlgoPaddedBufferedBlockCipher{
 
     private PaddedBufferedBlockCipher cipher;
 
