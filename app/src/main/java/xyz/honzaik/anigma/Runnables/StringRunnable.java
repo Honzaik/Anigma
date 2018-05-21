@@ -9,14 +9,24 @@ import java.io.UnsupportedEncodingException;
 import xyz.honzaik.anigma.Tasks.StringTask;
 import xyz.honzaik.anigma.Tasks.StringTaskState;
 
+/**
+ * Třída implementující rozhraní runnable. Používá se pro šifrování/dešifrování textu v jiném vlákně.
+ */
 public class StringRunnable implements Runnable {
 
     public StringTask task;
 
+    /**
+     * Kontruktor třídy StringRunnable. Dostává odkaz na objekt "task". Který obsahuje všechny potřebné informace.
+     * @param task
+     */
     public StringRunnable(StringTask task){
         this.task = task;
     }
 
+    /**
+     * Tato funkce spustí šifrování/dešifrování souborů v "task" v novém vlákně. Také zpracovává možné chyby.
+     */
     @Override
     public void run() {
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);

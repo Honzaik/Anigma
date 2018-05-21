@@ -6,15 +6,26 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 
+/**
+ * Třída pro práci se soubory v aplikaci.
+ */
 public class FileManager {
 
     private static final String MAIN_FOLDER_NAME = "Anigma";
     private static final String ENCRYPTION_SUFFIX = ".encrypted.";
     private static final String DECRYPTION_SUFFIX = ".decrypted.";
 
+    /**
+     * Kontruktor třídy FileManager. Aktuálně prázdný.
+     */
     public FileManager(){
     }
 
+    /**
+     * Vratí odkaz hlavní složku, ze které bude program číst a do které bude zapisovat. Pokud složka neexistuje, tak jí vytvoří.
+     * @return
+     * @throws Exception Pokud se nepodařilo vytvořit složku
+     */
     public File getMainFolder() throws Exception {
         File mainFolder = new File(Environment.getExternalStorageDirectory() + "/" + MAIN_FOLDER_NAME);
         if(mainFolder.exists() && mainFolder.isDirectory()){
@@ -28,7 +39,10 @@ public class FileManager {
         }
     }
 
-
+    /**
+     * Vratí seznam souborů ve hlavní složce. Vrací seznam objektů File
+     * @return
+     */
     public ArrayList<File> getFiles(){
         ArrayList<File> fileList = new ArrayList<>();
         try{
@@ -46,6 +60,10 @@ public class FileManager {
         return fileList;
     }
 
+    /**
+     * Vrátí cesty k souborům ve hlavní složce. Vrací seznam objektů String
+     * @return
+     */
     private ArrayList<String> getFilesPath(){
         ArrayList<String> fileList = new ArrayList<>();
         try{
@@ -62,6 +80,12 @@ public class FileManager {
         return fileList;
     }
 
+    /**
+     * Vrátí ještě nepoužité jméno pro daný soubor. Zabraňuje přepisu souborů.
+     * @param encrypting Zda-li chceme vrátit jméno pro dešifrovaný soubor nebo naopak.
+     * @param path Cesta k souboru od kterého chceme vytvořit kopii (šifrovanou nebo dešifrovanou).
+     * @return
+     */
     public String getUniqueFileExtension(boolean encrypting, String path){
         String suffix = (encrypting) ? ENCRYPTION_SUFFIX : DECRYPTION_SUFFIX;
         ArrayList<String> fileList = getFilesPath();
@@ -81,6 +105,12 @@ public class FileManager {
         return suffix + counter;
     }
 
+    /**
+     * Vratí odkaz na nový soubor, do kterého se bude zapisovat.
+     * @param encrypting Zda-li je nový soubor zašifrovaná kopie nebo dešifrovaná.
+     * @param input Odkaz na soubor od kterého chceme vytvořit kopii.
+     * @return
+     */
     public File getOutputFile(boolean encrypting, File input){
         String inputPath = input.getAbsolutePath();
         String newInputPath = inputPath;

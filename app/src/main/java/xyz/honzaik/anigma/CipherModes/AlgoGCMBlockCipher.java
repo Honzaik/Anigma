@@ -22,19 +22,41 @@ import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.FileTaskState;
 
+/**
+ * Abstraktní třída, která implimenetuje algoritmy definované v tříde Algorithm pro šifry v GCM módu.
+ */
 public abstract class AlgoGCMBlockCipher extends Algorithm{
 
     protected GCMBlockCipher cipher;
 
+    /**
+     * Konstruktor třídy AlgoGCMBlockCipher
+     * @param algo Jaký to je algoritmus
+     */
     public AlgoGCMBlockCipher(CipherList algo) {
         super(algo);
     }
 
+    /**
+     * Implementuje funkci z Algorithm
+     * @return
+     */
     @Override
     public int getBlockSize() {
         return cipher.getUnderlyingCipher().getBlockSize();
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v GCM módu zašifuje plaintext
+     * @param cipher Odkaz na šifru
+     * @param plaintext Plaintext, který chceme šifrovat
+     * @param password Heslo, které se použije k odvození klíče
+     * @param IV Inicializační vektor
+     * @return
+     * @throws UnsupportedEncodingException Nepodařilo se přečíst plaintext nebo password
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat plaintext
+     * @throws IllegalArgumentException Nastala chyba při inicializaci šifry pomocí parametrů
+     */
     protected String encryptStringWithGCMBlockCipher(GCMBlockCipher cipher, String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         random.nextBytes(salt);
         key = getKey(password, salt);
@@ -54,6 +76,16 @@ public abstract class AlgoGCMBlockCipher extends Algorithm{
         return Base64.encodeToString(result, Base64.DEFAULT);
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v GCM módu dešifuje ciphertext.
+     * @param cipher Odkaz na šifru
+     * @param ciphertext Ciphertext v Base64 kódování
+     * @param password Heslo, které se použije k odvození klíče
+     * @return
+     * @throws UnsupportedEncodingException Nepodařilo se přečíst ciphertext nebo password
+     * @throws InvalidCipherTextException Nepodařilo se dešifrovat ciphertext. Pravděpodobně špatné heslo.
+     * @throws IllegalArgumentException Nastala chyba při inicializaci šifry pomocí parametrů
+     */
     protected String decryptStringWithGCMBlockCipher(GCMBlockCipher cipher, String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         byte[] ciphertextBytes = Base64.decode(ciphertext, Base64.DEFAULT);
         if(ciphertextBytes.length <= SCRYPT_SALT_LENGTH + getBlockSize()){
@@ -74,8 +106,13 @@ public abstract class AlgoGCMBlockCipher extends Algorithm{
         return new String(outputBuffer, StandardCharsets.UTF_8);
     }
 
-
-
+    /**
+     * Funkce, která pro jakoukoliv šifru v GCM módu zašifuje soubor v "task"
+     * @param cipher Odkaz na šifru
+     * @param task Objekt obsahující všechny potřebné parametry (vstupní soubor, výstupní, heslo apod.)
+     * @throws IOException Nastala chyba při práci se soubory
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat soubor.
+     */
     protected void encryptFileWithGCMBlockCipher(GCMBlockCipher cipher, FileTask task) throws IOException, InvalidCipherTextException{
         random.nextBytes(salt);
         key = getKey(task.password, salt);
@@ -111,6 +148,13 @@ public abstract class AlgoGCMBlockCipher extends Algorithm{
         outputStream.write(outputBuffer, 0, bytesProcessed);
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v GCM módu dešifruje soubor v "task"
+     * @param cipher Odkaz na šifru
+     * @param task Objekt obsahující všechny potřebné parametry (vstupní soubor, výstupní, heslo apod.)
+     * @throws IOException Nastala chyba při práci se soubory
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat soubor. Pravděpodobně špatné heslo.
+     */
     protected void decryptFileWithGCMBlockCipher(GCMBlockCipher cipher, FileTask task) throws IOException, InvalidCipherTextException{
         FileInputStream inputStream = new FileInputStream(task.input);
         FileOutputStream outputStream = new FileOutputStream(task.output);

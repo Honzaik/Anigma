@@ -38,6 +38,9 @@ import xyz.honzaik.anigma.Tasks.FileTaskState;
 import xyz.honzaik.anigma.Tasks.StringTask;
 import xyz.honzaik.anigma.Tasks.StringTaskState;
 
+/**
+ * Hlavní a jediná aktivita aplikace Anigma. Stará se hlavně o UI.
+ */
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "Ang";
@@ -94,6 +97,10 @@ public class MainActivity extends AppCompatActivity {
     private ListView filesList;
     private View oldSelectedItem;
 
+    /**
+     * Funkce aktivity onCreate. Volá se při zapnutí aplikace. Inicializuje všechny UI prvky.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -355,6 +362,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Funkce aktivity onStart. Volá se při každém volání aplikace "do předu". Nemusí býr aplikace vypnutá. Zkontroluje, zda aplikace má potřebná oprávnění.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -362,16 +372,25 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Zpracuje výsledek žádosti o oprávnění. Pokud aplikace nedostane oprávnění, tak se restartuje a žádá znovu.
+     * @param requestCode Kód žádosti
+     * @param permissions O jaké oprávnění bylo žádáno
+     * @param grantResults Výsledek žádosti
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
             finishAffinity();
         }else{
-            restartApp(); //restart because of new permissions
+            restartApp();
         }
     }
 
+    /**
+     * Zkontroluje, zda aplikace má potřebná oprávnění, popřípadě o ně požádá. Pokud má oprávnění, tak zavolá načtení seznamu souborů.
+     */
     private void checkPermissions(){
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PERMISSIONS_REQUEST);
@@ -380,6 +399,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Natvrdo restartuje aplikaci. Používá se při dostání oprávnění.
+     */
     private void restartApp(){
         Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -389,10 +411,17 @@ public class MainActivity extends AppCompatActivity {
         android.os.Process.killProcess(android.os.Process.myPid()); //hard restart app for permissions to reload
     }
 
+    /**
+     * Vrátí handler třídy.
+     * @return
+     */
     public Handler getHandler(){
         return mainHandler;
     }
 
+    /**
+     * Inicializuje handler, který se používá pro zpracování informací od šifrujícího/dešifrujícího vlákna.
+     */
     private void initHandler() {
         mainHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -407,6 +436,10 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
+    /**
+     * Zpracuje zprávu od StringTask
+     * @param task Odkaz na aktuální objekt StringTask
+     */
     private void handleMessageFromStringTask(StringTask task){
         String resultString = null;
         switch (task.getState()) {
@@ -440,6 +473,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Zpracuje zprávu od FileTask
+     * @param task Odkaz na aktuální objekt FileTask
+     */
     private void handleMessageFromFileTask(FileTask task){
         String resultString = null;
         switch (task.getState()) {
@@ -487,6 +524,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Naplní seznam dostupných algoritmů.
+     */
     private void fillSpinners(){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item);
         adapter.addAll(algoManager.algorithmList.keySet());
@@ -494,6 +534,10 @@ public class MainActivity extends AppCompatActivity {
         spinnerTextAlgo.setAdapter(adapter);
     }
 
+    /**
+     * Provede změnu aktuálního algoritmu.
+     * @param name Jméno vybraného algoritmu
+     */
     private void changeAlgorithm(String name){
         algoManager.setCurrentAlgoritm(name);
         if(algoManager.getCurrentAlgorithm().hasIV){
@@ -503,14 +547,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Načte potřebné parametry z UI. Spustí šifrování textu.
+     */
     private void startStringEncryption(){
         algoManager.getStringTask().encryptString(editTextPlaintext.getText().toString(), editTextTextModeEncryptionPassword.getText().toString(), editTextTextModeIV.getText().toString());
     }
 
+    /**
+     * Načte potřebné parametry z UI. Spustí dešifrovaní textu.
+     */
     private void startStringDecryption(){
         algoManager.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
     }
 
+    /**
+     * Změní aktuální mód aplikace.
+     */
     private void switchMode(){
         isTextMode = !isTextMode;
         if(!isTextMode){
@@ -518,6 +571,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Načte seznam dostupných souborů v hlavní složce aplikace.
+     */
     private void loadFiles(){
         Log.d(TAG, "loading files");
         ArrayList<File> files = fileManager.getFiles();
@@ -530,6 +586,9 @@ public class MainActivity extends AppCompatActivity {
         filesList.setAdapter(adapter);
     }
 
+    /**
+     * Načte potřebné parametry z UI. Spustí šifrovaní souboru.
+     */
     private void startFileEncryption(){
         progressFileEnc.setProgress(0);
         String path = null;
@@ -544,6 +603,9 @@ public class MainActivity extends AppCompatActivity {
         algoManager.getFileTask().encryptFile(input, output, editTextFileModeEncryptionPassword.getText().toString(), editTextFileModeIV.getText().toString());
     }
 
+    /**
+     * Načte potřebné parametry z UI. Spustí dešifrovaní souboru.
+     */
     private void startFileDecryption(){
         progressFileDec.setProgress(0);
         String path = null;

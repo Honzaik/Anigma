@@ -12,7 +12,9 @@ import xyz.honzaik.anigma.Ciphers.AlgoAES256;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.StringTask;
 
-
+/**
+ * Tato třída se stará o seznam algoritmů použitých v programu.
+ */
 public class AlgoManager {
 
     public TreeMap<String, Algorithm> algorithmList;
@@ -20,10 +22,12 @@ public class AlgoManager {
     private SecureRandom random;
     private StringTask stringTask;
     private FileTask fileTask;
-    private MainActivity mainActivity;
 
+    /**
+     * Konstruktor třídy AlgoManager
+     * @param mainActivity odkaz na hlavní aktivitu programu kvůli předání odkazu na Handler
+     */
     public AlgoManager(MainActivity mainActivity){
-        this.mainActivity = mainActivity;
         random = new SecureRandom();
         stringTask = new StringTask(mainActivity.getHandler());
         fileTask = new FileTask(mainActivity.getHandler());
@@ -40,19 +44,32 @@ public class AlgoManager {
 
     }
 
+    /**
+     * Nastaví aktuálně používaný algoritmus dle jména
+     * @param name Jméno algoritmu
+     */
     public void setCurrentAlgoritm(String name){
         currentAlgorithm = algorithmList.get(name);
         stringTask.setAlgo(currentAlgorithm);
         fileTask.setAlgo(currentAlgorithm);
     }
 
+    /**
+     * Vrátí aktuální algoritmus
+     * @return
+     */
     public Algorithm getCurrentAlgorithm(){
         return currentAlgorithm;
     }
 
+    /**
+     * Vygeneruje náhodný IV pro aktuální algoritmus
+     * @return IV zakódovaný v Base64
+     * @throws Exception Výjimka, pokud algoritmus IV nepoužívá
+     */
     public String getRandomIV() throws Exception{
         if(!currentAlgorithm.hasIV){
-            throw new Exception("error getting iv for algorithm that doesnt have it");
+            throw new Exception("Error getting iv for algorithm that does not use it");
         }
         int size = currentAlgorithm.getBlockSize();
         Log.d(MainActivity.TAG, "Generating " + size + " bytes for IV");
@@ -61,10 +78,18 @@ public class AlgoManager {
         return Base64.encodeToString(newIV, Base64.DEFAULT);
     }
 
+    /**
+     * Vratí odkaz na StringTask
+     * @return
+     */
     public StringTask getStringTask() {
         return stringTask;
     }
 
+    /**
+     * Vrátí odkaz na FileTask
+     * @return
+     */
     public FileTask getFileTask() {
         return fileTask;
     }

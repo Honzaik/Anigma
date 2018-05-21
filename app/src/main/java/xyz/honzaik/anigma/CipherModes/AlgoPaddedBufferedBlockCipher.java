@@ -21,19 +21,42 @@ import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 import xyz.honzaik.anigma.Tasks.FileTaskState;
 
+/**
+ * Abstraktní třída, která implimenetuje algoritmy definované v tříde Algorithm pro šifry v CBC módu s paddingem.
+ */
 public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
 
     protected PaddedBufferedBlockCipher cipher;
 
+
+    /**
+     * Konstruktor třídy AlgoPaddedBufferedBlockCipher
+     * @param algo Jaký to je algoritmus
+     */
     public AlgoPaddedBufferedBlockCipher(CipherList algo) {
         super(algo);
     }
 
+    /**
+     * Implementuje funkci z Algorithm
+     * @return
+     */
     @Override
     public int getBlockSize() {
         return cipher.getUnderlyingCipher().getBlockSize();
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v CBC módu zašifuje plaintext
+     * @param cipher Odkaz na šifru
+     * @param plaintext Plaintext, který chceme šifrovat
+     * @param password Heslo, které se použije k odvození klíče
+     * @param IV Inicializační vektor
+     * @return
+     * @throws UnsupportedEncodingException Nepodařilo se přečíst plaintext nebo password
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat plaintext
+     * @throws IllegalArgumentException Nastala chyba při inicializaci šifry pomocí parametrů
+     */
     protected String encryptStringWithPaddedBufferedBlockCipher(PaddedBufferedBlockCipher cipher, String plaintext, String password, String IV) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException{
         random.nextBytes(salt);
         key = getKey(password, salt);
@@ -52,6 +75,16 @@ public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
         return Base64.encodeToString(result, Base64.DEFAULT);
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v CBC módu dešifuje ciphertext.
+     * @param cipher Odkaz na šifru
+     * @param ciphertext Ciphertext v Base64 kódování
+     * @param password Heslo, které se použije k odvození klíče
+     * @return
+     * @throws UnsupportedEncodingException Nepodařilo se přečíst ciphertext nebo password
+     * @throws InvalidCipherTextException Nepodařilo se dešifrovat ciphertext. Pravděpodobně špatné heslo.
+     * @throws IllegalArgumentException Nastala chyba při inicializaci šifry pomocí parametrů
+     */
     protected String decryptStringWithPaddedBufferedBlockCipher(PaddedBufferedBlockCipher cipher, String ciphertext, String password) throws UnsupportedEncodingException, InvalidCipherTextException, IllegalArgumentException {
         byte[] ciphertextBytes = Base64.decode(ciphertext, Base64.DEFAULT);
         if(ciphertextBytes.length <= SCRYPT_SALT_LENGTH + getBlockSize()){
@@ -72,6 +105,13 @@ public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
         return new String(outputBuffer, StandardCharsets.UTF_8);
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v CBC módu zašifuje soubor v "task"
+     * @param cipher Odkaz na šifru
+     * @param task Objekt obsahující všechny potřebné parametry (vstupní soubor, výstupní, heslo apod.)
+     * @throws IOException Nastala chyba při práci se soubory
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat soubor.
+     */
     protected void encryptFileWithPaddedBufferedBlockCipher(PaddedBufferedBlockCipher cipher, FileTask task) throws IOException, InvalidCipherTextException{
         random.nextBytes(salt);
         key = getKey(task.password, salt);
@@ -107,6 +147,13 @@ public abstract class AlgoPaddedBufferedBlockCipher extends Algorithm {
         outputStream.write(outputBuffer, 0, bytesProcessed);
     }
 
+    /**
+     * Funkce, která pro jakoukoliv šifru v CBC módu dešifruje soubor v "task"
+     * @param cipher Odkaz na šifru
+     * @param task Objekt obsahující všechny potřebné parametry (vstupní soubor, výstupní, heslo apod.)
+     * @throws IOException Nastala chyba při práci se soubory
+     * @throws InvalidCipherTextException Nepodařilo se zašifrovat soubor. Pravděpodobně špatné heslo.
+     */
     protected void decryptFileWithPaddedBufferedBlockCipher(PaddedBufferedBlockCipher cipher, FileTask task) throws IOException, InvalidCipherTextException{
         FileInputStream inputStream = new FileInputStream(task.input);
         FileOutputStream outputStream = new FileOutputStream(task.output);
