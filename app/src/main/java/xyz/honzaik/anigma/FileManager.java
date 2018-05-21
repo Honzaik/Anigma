@@ -8,16 +8,15 @@ import java.util.ArrayList;
 
 public class FileManager {
 
-    private String mainFolderName;
+    private static final String MAIN_FOLDER_NAME = "Anigma";
     private static final String ENCRYPTION_SUFFIX = ".encrypted.";
     private static final String DECRYPTION_SUFFIX = ".decrypted.";
 
-    public FileManager(String mainFolderName){
-        this.mainFolderName = mainFolderName;
+    public FileManager(){
     }
 
     public File getMainFolder() throws Exception {
-        File mainFolder = new File(Environment.getExternalStorageDirectory() + "/Anigma");
+        File mainFolder = new File(Environment.getExternalStorageDirectory() + "/" + MAIN_FOLDER_NAME);
         if(mainFolder.exists() && mainFolder.isDirectory()){
             return mainFolder;
         }else{
@@ -34,6 +33,7 @@ public class FileManager {
         ArrayList<File> fileList = new ArrayList<>();
         try{
             File mainFolder = getMainFolder();
+            Log.d(MainActivity.TAG, mainFolder.getAbsolutePath());
             File[] files = mainFolder.listFiles();
             for(File f : files){
                 if(f.isFile()){

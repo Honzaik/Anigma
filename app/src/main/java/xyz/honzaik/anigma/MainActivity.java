@@ -1,14 +1,20 @@
 package xyz.honzaik.anigma;
 
+import android.Manifest;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Message;
 
+import org.spongycastle.util.Pack;
 import org.w3c.dom.Text;
 
 import java.io.File;
@@ -38,6 +45,7 @@ import xyz.honzaik.anigma.Tasks.StringTaskState;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = "Ang";
+    private static final int PERMISSIONS_REQUEST = 9;
 
     private AlgoManager enc;
 
@@ -97,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         initHandler();
 
-        fileManager = new FileManager("Anigma");
+        fileManager = new FileManager();
 
 
         setContentView(R.layout.activity_main);
@@ -491,7 +499,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        loadFiles();
+        checkPermissions();
+
+    }
+
+    private void checkPermissions(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PERMISSIONS_REQUEST);
+        }else{
+            loadFiles();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+            finishAffinity();
+        }else{
+            restartApp(); //restart because of new permissions
+        }
+    }
+
+    private void restartApp(){
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finishAffinity();
+        android.os.Process.killProcess(android.os.Process.myPid()); //hard restart app for permissions to reload
     }
 
     private void switchMode(){
