@@ -1,7 +1,5 @@
 package xyz.honzaik.anigma.Ciphers;
 
-import android.util.Log;
-
 import org.spongycastle.crypto.InvalidCipherTextException;
 import org.spongycastle.crypto.engines.AESEngine;
 import org.spongycastle.crypto.modes.GCMBlockCipher;
@@ -12,7 +10,6 @@ import java.lang.IllegalArgumentException;
 
 import xyz.honzaik.anigma.CipherList;
 import xyz.honzaik.anigma.CipherModes.AlgoGCMBlockCipher;
-import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Tasks.FileTask;
 
 public class AlgoAES extends AlgoGCMBlockCipher{

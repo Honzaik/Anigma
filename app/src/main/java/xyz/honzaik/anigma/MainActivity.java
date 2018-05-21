@@ -9,7 +9,6 @@ import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -31,9 +30,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.os.Message;
 
-import org.spongycastle.util.Pack;
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -47,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String TAG = "Ang";
     private static final int PERMISSIONS_REQUEST = 9;
 
-    private AlgoManager enc;
+    private AlgoManager algoManager;
 
     private Button btnTextMode;
     private Button btnFileMode;
@@ -72,7 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout fileModeLayout;
     private LinearLayout fileModeEncryptionLayout;
     private LinearLayout fileModeDecryptionLayout;
-    private LinearLayout fileModeIVLayout;
     private Spinner spinnerTextAlgo;
     private EditText editTextPlaintext;
     private EditText editTextCiphertext;
@@ -103,23 +98,24 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.activity_main);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setCustomView(R.layout.action_bar);
+
         initHandler();
 
+        algoManager = new AlgoManager(this);
         fileManager = new FileManager();
-
-
-        setContentView(R.layout.activity_main);
-
-        enc = new AlgoManager(this);
+        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         mainLinearLayout = (LinearLayout) findViewById(R.id.LinearLayoutMain);
-
-        btnTextMode = (Button) findViewById(R.id.btnTextMode);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            btnTextMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1Pressed)));
-        }
-        btnFileMode = (Button) findViewById(R.id.btnFileMode);
-
+        textModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextMode);
+        fileModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileMode);
+        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextIV);
+        textModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeEncryption);
+        textModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeDecryption);
+        fileModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeEncryption);
+        fileModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeDecryption);
 
         editTextPlaintext = (EditText) findViewById(R.id.editTextPlainText);
         editTextCiphertext = (EditText) findViewById(R.id.editTextCiphertext);
@@ -130,16 +126,40 @@ public class MainActivity extends AppCompatActivity {
         editTextTextModeIV = (EditText) findViewById(R.id.editTextTextModeIV);
         editTextFileModeIV = (EditText) findViewById(R.id.editTextFileModeIV);
 
-        textModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextMode);
-        fileModeLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileMode);
+        progressTextEnc = (ProgressBar) findViewById(R.id.textModeProgressEnc);
+        progressTextDec = (ProgressBar) findViewById(R.id.textModeProgressDec);
+        progressFileEnc = (ProgressBar) findViewById(R.id.progressBarFileEncryption);
+        progressFileDec = (ProgressBar) findViewById(R.id.progressBarFileDecryption);
 
-        textModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeEncryption);
-        textModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextModeDecryption);
-        fileModeEncryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeEncryption);
-        fileModeDecryptionLayout = (LinearLayout) findViewById(R.id.LinearLayoutFileModeDecryption);
+        textViewTextResult = (TextView) findViewById(R.id.textModeResult);
+        textViewFileResult = (TextView) findViewById(R.id.fileModeResult);
+        textViewFileHelper = (TextView) findViewById(R.id.textViewFileHelper);
+        try{
+            textViewFileHelper.setText(getResources().getText(R.string.file_mode_files_helper) + " " + fileManager.getMainFolder().getAbsolutePath());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
-        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        getSupportActionBar().setCustomView(R.layout.action_bar);
+        filesList = (ListView) findViewById(R.id.listViewFiles);
+        filesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(oldSelectedItem != null){
+                    oldSelectedItem.setBackgroundColor(getResources().getColor(R.color.blond));
+                }
+                oldSelectedItem = view;
+                view.setBackgroundColor(getResources().getColor(R.color.bitterLemon));
+                final String item = (String) parent.getItemAtPosition(position);
+                Log.d(TAG, item);
+            }
+        });
+
+        btnTextMode = (Button) findViewById(R.id.btnTextMode);
+        btnFileMode = (Button) findViewById(R.id.btnFileMode);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            btnTextMode.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor1Pressed)));
+        }
 
         btnTextMode.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,10 +188,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnTextModeEncryption = (Button) findViewById(R.id.btnTextModeEncryptionMode);
+        btnTextModeDecryption = (Button) findViewById(R.id.btnTextModeDecryptionMode);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             btnTextModeEncryption.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.btnColor2Pressed)));
         }
-        btnTextModeDecryption = (Button) findViewById(R.id.btnTextModeDecryptionMode);
 
         btnTextModeEncryption.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -198,6 +218,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnTextRndIV = (Button) findViewById(R.id.btnTextRndIV);
+        btnTextRndIV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    editTextTextModeIV.setText(algoManager.getRandomIV());
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
         spinnerTextAlgo = (Spinner) findViewById(R.id.spinnerTextAlgo);
         spinnerTextAlgo.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -217,27 +249,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         fillSpinners();
-        enc.printAvailableAlgos();
-
-        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextIV);
-
-
-        btnTextRndIV = (Button) findViewById(R.id.btnTextRndIV);
-        btnTextRndIV.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    editTextTextModeIV.setText(enc.getRandomIV());
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-
-        textViewTextResult = (TextView) findViewById(R.id.textModeResult);
-        textViewFileResult = (TextView) findViewById(R.id.fileModeResult);
 
         btnCopyResult = (Button) findViewById(R.id.btnCopyResult);
         btnCopyResult.setOnClickListener(new View.OnClickListener() {
@@ -255,9 +266,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        progressTextEnc = (ProgressBar) findViewById(R.id.textModeProgressEnc);
-        progressTextDec = (ProgressBar) findViewById(R.id.textModeProgressDec);
-
         btnTextModeEncrypt = (Button) findViewById(R.id.btnTextModeEncrypt);
         btnTextModeDecrypt = (Button) findViewById(R.id.btnTextModeDecrypt);
 
@@ -273,20 +281,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 progressTextDec.setVisibility(View.VISIBLE);
                 startStringDecryption();
-            }
-        });
-
-        filesList = (ListView) findViewById(R.id.listViewFiles);
-        filesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(oldSelectedItem != null){
-                    oldSelectedItem.setBackgroundColor(getResources().getColor(R.color.blond));
-                }
-                oldSelectedItem = view;
-                view.setBackgroundColor(getResources().getColor(R.color.bitterLemon));
-                final String item = (String) parent.getItemAtPosition(position);
-                Log.d(TAG, item);
             }
         });
 
@@ -321,15 +315,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        textModeIVLayout = (LinearLayout) findViewById(R.id.LinearLayoutTextIV);
-
-
         btnFileRndIV = (Button) findViewById(R.id.btnFileRndIV);
         btnFileRndIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    editTextFileModeIV.setText(enc.getRandomIV());
+                    editTextFileModeIV.setText(algoManager.getRandomIV());
                 } catch (Exception e){
                     e.printStackTrace();
                 }
@@ -344,8 +335,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        progressFileEnc = (ProgressBar) findViewById(R.id.progressBarFileEncryption);
-        progressFileDec = (ProgressBar) findViewById(R.id.progressBarFileDecryption);
 
         btnFileModeEncrypt = (Button) findViewById(R.id.btnFileModeEncrypt);
         btnFileModeDecrypt = (Button) findViewById(R.id.btnFileModeDecrypt);
@@ -364,14 +353,44 @@ public class MainActivity extends AppCompatActivity {
                 startFileDecryption();
             }
         });
+    }
 
-        textViewFileHelper = (TextView) findViewById(R.id.textViewFileHelper);
-        try{
-            textViewFileHelper.setText(getResources().getText(R.string.file_mode_files_helper) + " " + fileManager.getMainFolder().getAbsolutePath());
-        } catch (Exception e){
-            e.printStackTrace();
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkPermissions();
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
+            finishAffinity();
+        }else{
+            restartApp(); //restart because of new permissions
         }
+    }
 
+    private void checkPermissions(){
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PERMISSIONS_REQUEST);
+        }else{
+            loadFiles();
+        }
+    }
+
+    private void restartApp(){
+        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
+        finishAffinity();
+        android.os.Process.killProcess(android.os.Process.myPid()); //hard restart app for permissions to reload
+    }
+
+    public Handler getHandler(){
+        return mainHandler;
     }
 
     private void initHandler() {
@@ -468,20 +487,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public Handler getHandler(){
-        return mainHandler;
-    }
-
     private void fillSpinners(){
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, R.layout.spinner_item);
-        adapter.addAll(enc.algorithmList.keySet());
+        adapter.addAll(algoManager.algorithmList.keySet());
         adapter.setDropDownViewResource(R.layout.spinner_item);
         spinnerTextAlgo.setAdapter(adapter);
     }
 
     private void changeAlgorithm(String name){
-        enc.setCurrentAlgoritm(name);
-        if(enc.getCurrentAlgorithm().hasIV){
+        algoManager.setCurrentAlgoritm(name);
+        if(algoManager.getCurrentAlgorithm().hasIV){
             textModeIVLayout.setVisibility(View.VISIBLE);
         }else{
             textModeIVLayout.setVisibility(View.GONE);
@@ -489,45 +504,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startStringEncryption(){
-        enc.getStringTask().encryptString(editTextPlaintext.getText().toString(), editTextTextModeEncryptionPassword.getText().toString(), editTextTextModeIV.getText().toString());
+        algoManager.getStringTask().encryptString(editTextPlaintext.getText().toString(), editTextTextModeEncryptionPassword.getText().toString(), editTextTextModeIV.getText().toString());
     }
 
     private void startStringDecryption(){
-        enc.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        checkPermissions();
-
-    }
-
-    private void checkPermissions(){
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},PERMISSIONS_REQUEST);
-        }else{
-            loadFiles();
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(!(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)){
-            finishAffinity();
-        }else{
-            restartApp(); //restart because of new permissions
-        }
-    }
-
-    private void restartApp(){
-        Intent i = getBaseContext().getPackageManager().getLaunchIntentForPackage(getBaseContext().getPackageName());
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
-        finishAffinity();
-        android.os.Process.killProcess(android.os.Process.myPid()); //hard restart app for permissions to reload
+        algoManager.getStringTask().decryptString(editTextCiphertext.getText().toString(), editTextTextModeDecryptionPassword.getText().toString());
     }
 
     private void switchMode(){
@@ -560,7 +541,7 @@ public class MainActivity extends AppCompatActivity {
         }
         File input = new File(path);
         File output = fileManager.getOutputFile(true, input);
-        enc.getFileTask().encryptFile(input, output, editTextFileModeEncryptionPassword.getText().toString(), editTextFileModeIV.getText().toString());
+        algoManager.getFileTask().encryptFile(input, output, editTextFileModeEncryptionPassword.getText().toString(), editTextFileModeIV.getText().toString());
     }
 
     private void startFileDecryption(){
@@ -574,7 +555,7 @@ public class MainActivity extends AppCompatActivity {
         }
         File input = new File(path);
         File output = fileManager.getOutputFile(false, input);
-        enc.getFileTask().decryptFile(input, output, editTextFileModeDecryptionPassword.getText().toString());
+        algoManager.getFileTask().decryptFile(input, output, editTextFileModeDecryptionPassword.getText().toString());
     }
 
 }

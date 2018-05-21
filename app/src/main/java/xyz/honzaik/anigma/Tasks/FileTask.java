@@ -9,7 +9,6 @@ import java.io.File;
 import xyz.honzaik.anigma.Algorithm;
 import xyz.honzaik.anigma.MainActivity;
 import xyz.honzaik.anigma.Runnables.FileRunnable;
-import xyz.honzaik.anigma.Runnables.StringRunnable;
 
 public class FileTask {
 

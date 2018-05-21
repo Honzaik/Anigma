@@ -4,7 +4,6 @@ import android.util.Base64;
 import android.util.Log;
 
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.TreeMap;
 
 import xyz.honzaik.anigma.Ciphers.Algo3DES;
@@ -37,13 +36,6 @@ public class AlgoManager {
                 break;
                 case AES256: algorithmList.put(algo.getName(), new AlgoAES256(algo));
             }
-        }
-
-    }
-
-    public void printAvailableAlgos(){
-        for(Map.Entry<String, Algorithm> e : algorithmList.entrySet()){
-            Log.d(MainActivity.TAG, e.getKey());
         }
 
     }
